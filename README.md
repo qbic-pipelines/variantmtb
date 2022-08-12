@@ -34,6 +34,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 1. Filter for variants that [PASS](http://samtools.github.io/bcftools/bcftools.html)
 2. Query [Clinvar](https://www.ncbi.nlm.nih.gov/clinvar/)
 3. Query [Oncokb](https://www.oncokb.org/)
+4. Query [Civic](https://civicdb.org/variants/home)
 
 ## Quick Start
 
