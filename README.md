@@ -31,8 +31,9 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
-1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Filter for variants that [PASS](http://samtools.github.io/bcftools/bcftools.html)
+2. Query [Clinvar](https://www.ncbi.nlm.nih.gov/clinvar/)
+3. Query [Oncokb](https://www.oncokb.org/)
 
 ## Quick Start
 
