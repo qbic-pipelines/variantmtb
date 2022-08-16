@@ -36,6 +36,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
+include { PREPARE_VCF } from '../subworkflows/local/prepare_vcf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -73,6 +74,15 @@ workflow VARIANTMTB {
     INPUT_CHECK.out.vcfs.view()
     //INPUT_CHECK.out.dump(tag:'input_output')
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+
+    //
+    // SUBWORKFLOW: Filter vcf file for PASS
+    //
+
+    PREPARE_VCF( INPUT_CHECK.out.vcfs )
+    ch_filtered_vcfs = PREPARE_VCF.out.vcf
+    ch_filtered_vcfs.view()
+    ch_versions = ch_versions.mix(PREPARE_VCF.out.versions.first())
 
     //
     // MODULE: Run FastQC
