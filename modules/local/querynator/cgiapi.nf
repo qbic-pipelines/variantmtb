@@ -16,39 +16,38 @@
 //               list (`[]`) instead of a file can be used to work around this issue.
 
 process QUERYNATOR_CGIAPI {
-    //tag "$meta.id"
+    tag "$meta.id"
     label 'process_low'
 
     conda "bioconda::querynator=0.1.3"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/querynator:0.1.3':
         'quay.io/biocontainers/querynator:0.1.3' }"
-
-    //publishDir "${out}", mode: 'symlink', overwrite:true, pattern: "*"
     
     input:
 
-    path mutations
-    //path cnas
-    //path translocations
-    val out
-    val cancer
-    val genome
-    val token
-    val email
+    tuple val(meta), path(mutations), path(cnas), path(translocations), val(cancer), val(genome), val(token), val(email)
 
     output:
     
-    path '${out}.cgi_results.zip'                      //, emit: zip
-    //path '*'
-    path "versions.yml"                         , emit: versions
+    publishDir "${meta.id}", mode: 'copy', pattern: "*"
+
+    path("${meta.id}.cgi_results.zip"), emit: zip
+    path("${meta.id}.cgi_results"), emit: results    
+    path("${meta.id}.cgi_results/drug_prescription.tsv"), emit: drug_tsv
+    path("${meta.id}.cgi_results/input01.tsv"), emit: input_tsv
+    path("${meta.id}.cgi_results/mutation_analysis.tsv"), emit: mutation_tsv
+    path("${meta.id}.cgi_results/metadata.txt"), emit: metadata_txt
+
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
-    //def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
+
     // TODO nf-core: Where possible, a command MUST be provided to obtain the version number of the software e.g. 1.10
     //               If the software is unable to output a version number on the command-line then it can be manually specified
     //               e.g. https://github.com/nf-core/modules/blob/master/modules/nf-core/homer/annotatepeaks/main.nf
@@ -58,10 +57,19 @@ process QUERYNATOR_CGIAPI {
     //               using the Nextflow "task" variable e.g. "--threads $task.cpus"
     // TODO nf-core: Please replace the example samtools command below with your module's command
     // TODO nf-core: Please indent the command appropriately (4 spaces!!) to help with readability ;)
+
+    // if parameter was set: use the flag with the file, if not: command on console is ''
+
+    def mutations_file = mutations ? "--mutations ${mutations}" : "" 
+    def translocation_file = translocations ? "--translocations ${translocations}" : ''
+    def cnas_file = cnas ? "--cnas ${cnas}" : ''
+    
     """
     querynator query-api-cgi \
-        --mutations $mutations \
-        --output $out \
+        $mutations_file \
+        $translocation_file \
+        $cnas_file \
+        --output $prefix \
         --cancer $cancer \
         --genome $genome \
         --token $token \
