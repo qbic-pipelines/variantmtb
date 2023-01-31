@@ -30,7 +30,7 @@ process QUERYNATOR_CGIAPI {
 
     output:
     
-    publishDir "${meta.id}", mode: 'copy', pattern: "*"
+    publishDir "${params.outdir}/${meta.id}", mode: 'copy', pattern: "*"
 
     path("${meta.id}.cgi_results.zip"), emit: zip
     path("${meta.id}.cgi_results"), emit: results    

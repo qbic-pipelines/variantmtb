@@ -112,6 +112,9 @@ workflow VARIANTMTB {
     //     params.cgi_email
     // ]
     
+    INPUT_CHECK.out.input_row_vals.view()
+
+
     input = [
         [ id:'test' ], // meta map
         "/mnt/volume/workdir/masterthesis/vcf_files/variants_dev.vcf",
@@ -123,8 +126,7 @@ workflow VARIANTMTB {
         'mark.polster@uni-tuebingen.de'
     ]
 
-
-    QUERYNATOR_CGIAPI( input )
+    QUERYNATOR_CGIAPI( INPUT_CHECK.out.input_row_vals )
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
