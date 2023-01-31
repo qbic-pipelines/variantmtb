@@ -30,10 +30,19 @@ class RowChecker:
         ".vcf.gz",
     )
 
+    VALID_GENOMES = (
+        "hg19",
+        "GRCh37",
+        "hg38",
+        "GRCh38"
+    )
+
     def __init__(
         self,
         sample_col="sample",
-        first_col="vcf",
+        vcf_col="vcf",
+        genome_col="genome",
+
         **kwargs,
     ):
         """
@@ -42,13 +51,14 @@ class RowChecker:
         Args:
             sample_col (str): The name of the column that contains the sample name
                 (default "sample").
-            first_col (str): The name of the column that contains the first (or only)
+            vcf_col (str): The name of the column that contains the first (or only)
                 VCF file path (default "vcf").
 
         """
         super().__init__(**kwargs)
         self._sample_col = sample_col
-        self._first_col = first_col
+        self._vcf_col = vcf_col
+        self._genome_col = genome_col
         self._seen = set()
         self.modified = []
 
@@ -63,7 +73,7 @@ class RowChecker:
         """
         self._validate_sample(row)
         self._validate_first(row)
-        self._seen.add((row[self._sample_col], row[self._first_col]))
+        self._seen.add((row[self._sample_col], row[self._vcf_col]))
         self.modified.append(row)
 
     def _validate_sample(self, row):
@@ -74,14 +84,22 @@ class RowChecker:
 
     def _validate_first(self, row):
         """Assert that the first VCF entry is non-empty and has the right format."""
-        assert len(row[self._first_col]) > 0, "At least the first VCF file is required."
-        self._validate_vcf_format(row[self._first_col])
+        assert len(row[self._vcf_col]) > 0, "At least the first VCF file is required."
+        self._validate_vcf_format(row[self._vcf_col])
+        self._validate_genome(row[self._genome_col])
 
     def _validate_vcf_format(self, filename):
         """Assert that a given filename has one of the expected VCF extensions."""
         assert any(filename.endswith(extension) for extension in self.VALID_FORMATS), (
             f"The VCF file has an unrecognized extension: {filename}\n"
             f"It should be one of: {', '.join(self.VALID_FORMATS)}"
+        )
+
+    def _validate_genome(self, genome_name):
+        """Assert that the given reference genome is compatible with the pipeline."""
+        assert any(genome_name == genome for genome in self.VALID_GENOMES), (
+            f"The provided reference genome is not supported: {genome_name}\n"
+            f"It should be one of: {', '.join(self.VALID_GENOMES)}"
         )
 
     def validate_unique_samples(self):
@@ -155,16 +173,16 @@ def check_samplesheet(file_in, file_out):
         This function checks that the samplesheet follows the following structure,
         see also the `viral recon samplesheet`_::
 
-            sample,vcf
-            SAMPLE1,SAMPLE1.vcf.gz
-            SAMPLE2,SAMPLE2.vcf.gz
-            SAMPLE3,SAMPLE3.vcf.gz
+            sample,vcf,genome
+            SAMPLE1,SAMPLE1.vcf.gz,hg19
+            SAMPLE2,SAMPLE2.vcf.gz,GRCh37
+            SAMPLE3,SAMPLE3.vcf.gz,hg19
 
     .. _viral recon samplesheet:
         https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/samplesheet/samplesheet_test_illumina_amplicon.csv
 
     """
-    required_columns = {"sample", "vcf"}
+    required_columns = {"sample", "vcf", "genome"}
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_in.open(newline="") as in_handle:
         reader = csv.DictReader(in_handle, dialect=sniff_format(in_handle))

@@ -35,8 +35,9 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
-include { PREPARE_VCF } from '../subworkflows/local/prepare_vcf'
+include { INPUT_CHECK }             from '../subworkflows/local/input_check'
+include { PREPARE_VCF }             from '../subworkflows/local/prepare_vcf'
+include { QUERYNATOR_CGIAPI }       from '../modules/local/querynator/cgiapi' 
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,15 +81,15 @@ workflow VARIANTMTB {
     //              Split VEP fields into tsv
     //
 
-    PREPARE_VCF( INPUT_CHECK.out.vcfs )
+    //PREPARE_VCF( INPUT_CHECK.out.vcfs )
 
     //ch_filtered_vcfs.view()
 
-    ch_split_vep_tsv = PREPARE_VCF.out.split_vep
-    ch_split_vep_tsv.view()
+    // ch_split_vep_tsv = PREPARE_VCF.out.split_vep
+    // ch_split_vep_tsv.view()
 
     // gather versions
-    ch_filtered_vcfs = PREPARE_VCF.out.vcf
+    // ch_filtered_vcfs = PREPARE_VCF.out.vcf
 
     //
     // MODULE: Run FastQC
@@ -97,6 +98,33 @@ workflow VARIANTMTB {
     //    INPUT_CHECK.out.reads
     //)
     //ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+
+    // MODULE: Run querynator query_cgi
+
+    // input = [
+    //     [ id:"test" ], // meta map
+    //     INPUT_CHECK.out.vcfs,
+    //     [],
+    //     [],
+    //     params.cgi_cancer_type,
+    //     params.genome,
+    //     params.cgi_token,
+    //     params.cgi_email
+    // ]
+    
+    input = [
+        [ id:'test' ], // meta map
+        "/mnt/volume/workdir/masterthesis/vcf_files/variants_dev.vcf",
+        [],
+        [],
+        '"Any cancer type"',
+        'GRCh37',
+        '29dec4da958311bb8e28',
+        'mark.polster@uni-tuebingen.de'
+    ]
+
+
+    QUERYNATOR_CGIAPI( input )
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')

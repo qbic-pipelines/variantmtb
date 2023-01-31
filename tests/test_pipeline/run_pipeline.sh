@@ -1,0 +1,1 @@
+nextflow run ../../main.nf -profile docker --input test_input.csv --cgi_email mark.polster@uni-tuebingen.de --cgi_token 29dec4da958311bb8e28 -resume

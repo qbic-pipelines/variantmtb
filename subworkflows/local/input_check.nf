@@ -13,14 +13,14 @@ workflow INPUT_CHECK {
         .csv
         .splitCsv ( header:true, sep:',' )
         .map { create_vcf_channel(it) }
-        .set { vcfs }
+        .set { input_row_vals }
 
     emit:
-    vcfs                                     // channel: [ val(meta), [ vcf ] ]
-    versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
+    input_row_vals                                   // channel: [ val(meta), file(vcf), val(genome)  ]
+    versions = SAMPLESHEET_CHECK.out.versions       // channel: [ versions.yml ]
 }
 
-// Function to get list of [ meta, [ vcf ] ]
+// Function to get list of [ meta, vcf, genome  ]
 def create_vcf_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
@@ -32,7 +32,8 @@ def create_vcf_channel(LinkedHashMap row) {
         exit 1, "ERROR: Please check input samplesheet -> VCF file does not exist!\n${row.vcf}"
     }
     else{
-        vcf_meta = [ meta, [ file(row.vcf) ] ]
+        vcf_meta = [ meta, file(row.vcf), row.genome ] 
     }
+    printl(vcf_meta)
     return vcf_meta
 }
