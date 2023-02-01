@@ -37,6 +37,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 include { INPUT_CHECK }             from '../subworkflows/local/input_check'
 include { PREPARE_VCF }             from '../subworkflows/local/prepare_vcf'
+include { QUERYNATOR_INPUT }        from '../subworkflows/local/create_querynator_input'
 include { QUERYNATOR_CGIAPI }       from '../modules/local/querynator/cgiapi' 
 
 /*
@@ -99,34 +100,15 @@ workflow VARIANTMTB {
     //)
     //ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
+    // SUBWORKFLOW: Create input for the querynator queries
+
+    QUERYNATOR_INPUT(INPUT_CHECK.out.input_row_vals )
+
+    QUERYNATOR_INPUT.out.cgi_input.view()
+
     // MODULE: Run querynator query_cgi
 
-    // input = [
-    //     [ id:"test" ], // meta map
-    //     INPUT_CHECK.out.vcfs,
-    //     [],
-    //     [],
-    //     params.cgi_cancer_type,
-    //     params.genome,
-    //     params.cgi_token,
-    //     params.cgi_email
-    // ]
-    
-    INPUT_CHECK.out.input_row_vals.view()
-
-
-    input = [
-        [ id:'test' ], // meta map
-        "/mnt/volume/workdir/masterthesis/vcf_files/variants_dev.vcf",
-        [],
-        [],
-        '"Any cancer type"',
-        'GRCh37',
-        '29dec4da958311bb8e28',
-        'mark.polster@uni-tuebingen.de'
-    ]
-
-    QUERYNATOR_CGIAPI( INPUT_CHECK.out.input_row_vals )
+    QUERYNATOR_CGIAPI( QUERYNATOR_INPUT.out.cgi_input )
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')

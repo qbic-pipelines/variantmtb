@@ -32,18 +32,7 @@ def create_vcf_channel(LinkedHashMap row) {
         exit 1, "ERROR: Please check input samplesheet -> VCF file does not exist!\n${row.vcf}"
     }
     else{
-        vcf_meta =  [ meta, file(row.vcf), [], [], params.cgi_cancer_type, row.genome, params.cgi_token, params.cgi_email ]
-        
-        // specify between mutations (variants --> vcf), cnas, translocations
-        // if (row.vcf.endsWith('.vcf')){
-        //     vcf_meta =  [ meta, file(row.vcf), [], [], params.cgi_cancer_type, row.genome, params.cgi_token, params.cgi_email ]
-        // }
-        // else if (row.vcf.endsWith('.vcf')){
-        //     vcf_meta =  [ meta, file(row.vcf), [], [], params.cgi_cancer_type, row.genome, params.cgi_token, params.cgi_email ]
-        // }
-        // else if (row.vcf.endsWith('.vcf')){
-        //     vcf_meta =  [ meta, file(row.vcf), [], [], params.cgi_cancer_type, row.genome, params.cgi_token, params.cgi_email ]
-        // }    
+        vcf_meta =  [ meta, file(row.vcf), row.genome ] 
     }
     return vcf_meta
 }
