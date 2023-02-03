@@ -52,6 +52,7 @@ include { QUERYNATOR_CGIAPI }       from '../modules/local/querynator/cgiapi'
 //include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 //include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { GUNZIP }                      from '../modules/nf-core/gunzip/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,6 +82,7 @@ workflow VARIANTMTB {
     // SUBWORKFLOW: Filter vcf file for PASS
     //              Split VEP fields into tsv
     //
+    
 
     //PREPARE_VCF( INPUT_CHECK.out.vcfs )
 
@@ -100,15 +102,42 @@ workflow VARIANTMTB {
     //)
     //ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
-    // SUBWORKFLOW: Create input for the querynator queries
+    // separate gzipped & unzipped files
+    INPUT_CHECK.out.input_row_vals
+                        .branch {
+                            meta, input_file, genome, filetype -> 
+                                compressed_files : filetype == 'compressed'
+                                    return [ meta, input_file, genome ]
+                                uncompressed_files : filetype == 'uncompressed'
+                                    return [ meta, input_file, genome ]
+                            }
+                        .set { ch_input_compressed_split }
+    
+    // MODULE: gunzip compressed files
+    GUNZIP( ch_input_compressed_split.compressed_files )
 
-    QUERYNATOR_INPUT(INPUT_CHECK.out.input_row_vals )
+    ch_versions = ch_versions.mix(GUNZIP.out.versions)
 
-    QUERYNATOR_INPUT.out.cgi_input.view()
+    // Recombine the files & Create querynator CGI input 
+    ch_input_compressed_split.uncompressed_files
+        .mix(GUNZIP.out.gunzip)
+        .set { ch_uncompressed_input }
+
+    ch_uncompressed_input.map { meta, input_file, genome -> [ meta,
+                                                            input_file,
+                                                            [],
+                                                            [], 
+                                                            create_cgi_cancer_type_string(params.cgi_cancer_type),
+                                                            genome, 
+                                                            params.cgi_token, 
+                                                            params.cgi_email ] }
+                        .set { ch_cgi_input }
+
 
     // MODULE: Run querynator query_cgi
+    QUERYNATOR_CGIAPI( ch_cgi_input )
 
-    QUERYNATOR_CGIAPI( QUERYNATOR_INPUT.out.cgi_input )
+    ch_versions = ch_versions.mix(QUERYNATOR_CGIAPI.out.versions)
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
@@ -134,6 +163,21 @@ workflow VARIANTMTB {
     //ch_versions    = ch_versions.mix(MULTIQC.out.versions)
 
 }
+
+
+// Function that checks whether params.cgi_cancer_types contains the quotations ('') and isnt just a string. 
+// If lonely string, adds the quotations, so that cancer types consisting of multiple words can be read by querynator
+def create_cgi_cancer_type_string(cancer_type) {
+    if (!params.cgi_cancer_type.contains("'")) {
+        cgi_cancer_type_string = "'" + cancer_type + "'"
+    }
+    else {
+        cgi_cancer_type_string = cancer_type
+    }
+    return cgi_cancer_type_string
+}
+
+    
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -16,7 +16,7 @@ workflow INPUT_CHECK {
         .set { input_row_vals }
 
     emit:
-    input_row_vals                                   // channel: [ val(meta), file(vcf), val(genome)  ]
+    input_row_vals                                   // channel: [ val(meta), file(vcf), val(genome), val(filetype)  ]
     versions = SAMPLESHEET_CHECK.out.versions       // channel: [ versions.yml ]
 }
 
@@ -32,7 +32,20 @@ def create_vcf_channel(LinkedHashMap row) {
         exit 1, "ERROR: Please check input samplesheet -> VCF file does not exist!\n${row.vcf}"
     }
     else{
-        vcf_meta =  [ meta, file(row.vcf), row.genome ] 
+        vcf_meta =  [ meta, file(row.vcf), row.genome, check_if_zipped(row.vcf) ] 
     }
     return vcf_meta
+}
+
+def check_if_zipped(String filename){
+    def filetype 
+    def input_file = file(filename)
+
+    if ( filename.endsWith(".gz") ){
+        filetype = "compressed"
+    }
+    else {
+        filetype = "uncompressed"
+    }
+    return filetype
 }
