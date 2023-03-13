@@ -8,11 +8,11 @@ process GUNZIP {
         'ubuntu:20.04' }"
 
     input:
-    tuple val(meta), path(archive), val(genome)
+    tuple val(meta), path(archive), val(genome), val(filetype)
 
     output:
-    tuple val(meta), path("$gunzip"), val(genome)   , emit: gunzip
-    path "versions.yml"                             , emit: versions
+    tuple val(meta), path("$gunzip"), val(genome), val(filetype)    , emit: gunzip
+    path "versions.yml"                                             , emit: versions
 
     when:
     task.ext.when == null || task.ext.when

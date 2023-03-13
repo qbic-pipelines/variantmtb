@@ -1,4 +1,4 @@
-process TABIX_BGZIPTABIX {
+process TABIX_TABIX {
     tag "$meta.id"
     label 'process_single'
 
@@ -8,22 +8,20 @@ process TABIX_BGZIPTABIX {
         'quay.io/biocontainers/tabix:1.11--hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(input), val(genome), val(filetype)
+    tuple val(meta), path(tab), val(genome), val(filetype)
 
     output:
-    tuple val(meta), path("*.gz"), path("*.tbi"), val(genome), val(filetype),   emit: gz_tbi
-    path  "versions.yml" ,                                                      emit: versions
+    tuple val(meta), path(tab), path("*.tbi"), val(genome), val(filetype),     optional:true, emit: tbi
+    tuple val(meta), path(tab), path("*.csi"), val(genome), val(filetype),     optional:true, emit: csi
+    path  "versions.yml"          , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
-    def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    bgzip  --threads ${task.cpus} -c $args $input > ${input}.gz
-    tabix $args2 ${input}.gz
+    tabix $args $tab
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -34,10 +32,9 @@ process TABIX_BGZIPTABIX {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.gz
-    touch ${prefix}.gz.tbi
-
+    touch ${tab}.tbi
     cat <<-END_VERSIONS > versions.yml
+
     "${task.process}":
         tabix: \$(echo \$(tabix -h 2>&1) | sed 's/^.*Version: //; s/ .*\$//')
     END_VERSIONS

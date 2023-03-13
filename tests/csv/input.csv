@@ -1,3 +1,2 @@
-sample,vcf
-7375,/mnt/volume/workdir/masterthesis/vcf_files/7375.vcf
-004843,/mnt/volume/workdir/masterthesis/vcf_files/00483.vcf
+sample,vcf,genome
+test_sample,/mnt/volume/workdir/masterthesis/vcf_files/7375.vcf,hg19

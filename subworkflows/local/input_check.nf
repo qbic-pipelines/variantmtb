@@ -12,29 +12,29 @@ workflow INPUT_CHECK {
     SAMPLESHEET_CHECK ( samplesheet )
         .csv
         .splitCsv ( header:true, sep:',' )
-        .map { create_vcf_channel(it) }
+        .map { create_input_channel(it) }
         .set { input_row_vals }
 
     emit:
-    input_row_vals                                   // channel: [ val(meta), file(vcf), val(genome), val(filetype)  ]
+    input_row_vals                                   // channel: [ val(meta), file(input_file), val(genome), val(filetype)  ]
     versions = SAMPLESHEET_CHECK.out.versions       // channel: [ versions.yml ]
 }
 
-// Function to get list of [ meta, vcf, genome  ]
-def create_vcf_channel(LinkedHashMap row) {
+// Function to get list of [ meta, inputfile, genome, filetype ]
+def create_input_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
     meta.id         = row.sample
 
     // add path(s) of the fastq file(s) to the meta map
-    def vcf_meta = []
-    if (!file(row.vcf).exists()) {
-        exit 1, "ERROR: Please check input samplesheet -> VCF file does not exist!\n${row.vcf}"
+    def input_meta = []
+    if (!file(row.filename).exists()) {
+        exit 1, "ERROR: Please check input samplesheet -> inputfile file does not exist!\n${row.filename}"
     }
     else{
-        vcf_meta =  [ meta, file(row.vcf), row.genome, check_if_zipped(row.vcf) ] 
+        input_meta =  [ meta, file(row.filename), row.genome, row.filetype, check_if_zipped(row.filename) ] 
     }
-    return vcf_meta
+    return input_meta
 }
 
 def check_if_zipped(String filename){
@@ -42,10 +42,10 @@ def check_if_zipped(String filename){
     def input_file = file(filename)
 
     if ( filename.endsWith(".gz") ){
-        filetype = "compressed"
+        compressed_check = "compressed"
     }
     else {
-        filetype = "uncompressed"
+        compressed_check = "uncompressed"
     }
-    return filetype
+    return compressed_check
 }
