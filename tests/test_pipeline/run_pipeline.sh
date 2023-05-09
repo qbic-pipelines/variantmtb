@@ -1,1 +1,0 @@
-nextflow run ../../main.nf -profile docker --databases 'cgi, civic' --input test_input.csv --cgi_email mark.polster@student.uni-tuebingen.de --cgi_token 140548792a8d560d468b --cgi_cancer_type "Any cancer type" -resume

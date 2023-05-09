@@ -265,5 +265,23 @@
         {
             "$ref": "#/definitions/generic_options"
         }
-    ]
+    ],
+    "properties": {
+        "databases": {
+            "type": "string",
+            "default": "cgi, civic"
+        },
+        "cgi_email": {
+            "type": "string",
+            "default": null
+        },
+        "cgi_token": {
+            "type": "string",
+            "default": null
+        },
+        "cgi_cancer_type": {
+            "type": "string",
+            "default": "\\'Any cancer type\\"
+        }
+    }
 }

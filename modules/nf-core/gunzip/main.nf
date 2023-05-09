@@ -5,14 +5,14 @@ process GUNZIP {
     conda "conda-forge::sed=4.7"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/ubuntu:20.04' :
-        'ubuntu:20.04' }"
+        'docker.io/library/ubuntu:20.04' }"
 
     input:
-    tuple val(meta), path(archive), val(genome), val(filetype)
+    tuple val(meta), path(archive)
 
     output:
-    tuple val(meta), path("$gunzip"), val(genome), val(filetype)    , emit: gunzip
-    path "versions.yml"                                             , emit: versions
+    tuple val(meta), path("$gunzip"), emit: gunzip
+    path "versions.yml"             , emit: versions
 
     when:
     task.ext.when == null || task.ext.when

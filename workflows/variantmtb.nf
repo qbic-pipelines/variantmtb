@@ -9,13 +9,20 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 // Validate input parameters
 WorkflowVariantmtb.initialise(params, log)
 
-// TODO nf-core: Add all file path parameters for the pipeline to the list below
+
 // Check input path parameters to see if they exist
-//def checkPathParamList = [ params. ] // , params.multiqc_config, params.fasta
-//for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
+def checkPathParamList = [
+    params.fasta,
+    params.input,
+    ]
+
+for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+
+// Initialize file channels based on params
+fasta              = params.fasta              ? Channel.fromPath(params.fasta).collect()                    : Channel.value([])
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,11 +42,12 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK }             from '../subworkflows/local/input_check'
-include { PREPARE_VCF }             from '../subworkflows/local/prepare_vcf'
-include { QUERYNATOR_INPUT }        from '../subworkflows/local/create_querynator_input'
-include { QUERYNATOR_CGIAPI }       from '../modules/local/querynator/cgiapi' 
-include { QUERYNATOR_CIVICAPI }       from '../modules/local/querynator/civicapi' 
+include { INPUT_CHECK }                 from '../subworkflows/local/input_check'
+include { PREPARE_VCF }                 from '../subworkflows/local/prepare_vcf'
+include { QUERYNATOR_INPUT }            from '../subworkflows/local/create_querynator_input'
+include { QUERYNATOR_CGIAPI }           from '../modules/local/querynator/cgiapi' 
+include { QUERYNATOR_CIVICAPI }         from '../modules/local/querynator/civicapi'
+include { QUERYNATOR_CREATEREPORT }     from '../modules/local/querynator/createreport' 
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,6 +64,7 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoft
 include { GUNZIP }                      from '../modules/nf-core/gunzip/main'
 include { TABIX_TABIX }                 from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIPTABIX }            from '../modules/nf-core/tabix/bgziptabix/main'
+include { BCFTOOLS_NORM }               from '../modules/nf-core/bcftools/norm/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,8 +86,7 @@ workflow VARIANTMTB {
     INPUT_CHECK (
         ch_input
     )
-    //INPUT_CHECK.out.vcfs.view()
-    //INPUT_CHECK.out.dump(tag:'input_output')
+
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
@@ -113,69 +121,81 @@ workflow VARIANTMTB {
 
     dbs = params.databases?.tokenize(',')
     println(dbs)
+
+    INPUT_CHECK.out.input_row_vals
+                            .map { meta, input_file, genome, filetype, compressed ->
+                            meta["ref"] = genome
+                            meta["filetype"] = filetype
+                            meta["compressed"] = compressed
+                            return [ meta, input_file ] }
+                            .set { ch_input }
+
+
     /*
     ------------------------
         CGI
     ------------------------
     */
 
+    
+
     if (params.databases.contains("cgi")) {
         // separate gzipped & unzipped files also separate mutations from other input for CIViC
-        INPUT_CHECK.out.input_row_vals
-                            .branch {
-                                meta, input_file, genome, filetype, compressed ->
-                                    compressed_files : compressed == 'compressed'
-                                        return [ meta, input_file, genome, filetype  ]
-                                    uncompressed_files : compressed == 'uncompressed'
-                                        return [ meta, input_file, genome, filetype ]
+        // ch_input
+        //         .branch {
+        //             meta, input_file ->
+        //                 compressed_files : meta["compressed"] == 'compressed'
+        //                     return [ meta, input_file ]
+        //                 uncompressed_files : meta["compressed"] == 'uncompressed'
+        //                     return [ meta, input_file ]
 
-                                }
-                            .set { ch_input_compressed_split }
+        //             }
+        //         .set { ch_input_compressed_split }
 
-        // MODULE: gunzip compressed files
-        GUNZIP( ch_input_compressed_split.compressed_files )
+        // // MODULE: gunzip compressed files
+        // GUNZIP( ch_input_compressed_split.compressed_files )
 
-        ch_versions = ch_versions.mix(GUNZIP.out.versions)
+        // ch_versions = ch_versions.mix(GUNZIP.out.versions)
 
-        // Recombine the channels & Create input to split different file types 
-        ch_input_compressed_split.uncompressed_files
-            .mix(GUNZIP.out.gunzip)
-            .set { ch_uncompressed_input }
+        // // Recombine the channels & Create input to split different file types 
+        // ch_input_compressed_split.uncompressed_files
+        //     .mix(GUNZIP.out.gunzip)
+        //     .set { ch_uncompressed_input }
 
         
         //separate different filetypes for cgi input (mutations, translocations, cnas)
-        ch_uncompressed_input
-                            .branch {
-                                meta, input_file, genome, filetype -> 
-                                    mutations : filetype == 'mutations'
-                                        return [    meta,
-                                                    input_file,
-                                                    [],
-                                                    [], 
-                                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
-                                                    genome, 
-                                                    params.cgi_token, 
-                                                    params.cgi_email ]
-                                    translocations : filetype == 'translocations'
-                                        return [    meta,
-                                                    [],
-                                                    input_file,
-                                                    [], 
-                                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
-                                                    genome, 
-                                                    params.cgi_token, 
-                                                    params.cgi_email ]
-                                    cnas : filetype == 'cnas'
-                                        return [    meta,
-                                                    [],
-                                                    [],
-                                                    input_file, 
-                                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
-                                                    genome, 
-                                                    params.cgi_token, 
-                                                    params.cgi_email ]
-                                }
-                            .set { ch_input_filetype_split }
+        ch_input
+            .branch {
+                meta, input_file  -> 
+                    mutations : meta["filetype"] == 'mutations'
+                        return [    meta,
+                                    input_file,
+                                    [],
+                                    [], 
+                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
+                                    meta["ref"], 
+                                    params.cgi_token, 
+                                    params.cgi_email ]
+                    translocations : meta["filetype"] == 'translocations'
+                        return [    meta,
+                                    [],
+                                    input_file,
+                                    [], 
+                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
+                                    meta["ref"], 
+                                    params.cgi_token, 
+                                    params.cgi_email ]
+                    cnas : meta["filetype"] == 'cnas'
+                        return [    meta,
+                                    [],
+                                    [],
+                                    input_file, 
+                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
+                                    meta["ref"],
+                                    params.cgi_token, 
+                                    params.cgi_email ]
+                }
+            .set { ch_input_filetype_split }
 
         // Recombine the channels & Create querynator CGI input
         ch_input_filetype_split.mutations
@@ -191,38 +211,49 @@ workflow VARIANTMTB {
     */
 
     if (params.databases.contains("civic")) {
-        INPUT_CHECK.out.input_row_vals
-                            .branch {
-                                    meta, input_file, genome, filetype, compressed ->
-                                    compressed_mutations : compressed == 'compressed' & filetype == 'mutations'
-                                        return [ meta, input_file, genome, filetype  ]
-                                    uncompressed_mutations : compressed == 'uncompressed' & filetype == 'mutations'
-                                        return [ meta, input_file, genome, filetype ] 
-                            }
-                            .set { ch_input_mutation_compressed_split }
         
-
+    
+        ch_input.branch {
+                meta, input_file ->
+                compressed_mutations : meta["compressed"] == 'compressed' & meta["filetype"] == 'mutations'
+                    return [ meta, input_file ]
+                uncompressed_mutations : meta["compressed"] == 'uncompressed' & meta["filetype"] == 'mutations'
+                    return [ meta, input_file ] 
+        }
+        .set { ch_input_mutation_compressed_split }
+        
+        
         // Tabix compressed files
         TABIX_TABIX( ch_input_mutation_compressed_split.compressed_mutations )
-
+        
         ch_versions = ch_versions.mix(TABIX_TABIX.out.versions)
-
-        // bgzip & tabix uncompressed files
+        
+        // //bgzip & tabix uncompressed files
         TABIX_BGZIPTABIX( ch_input_mutation_compressed_split.uncompressed_mutations )
 
         ch_versions = ch_versions.mix(TABIX_BGZIPTABIX.out.versions)
 
-        // Recombine the channels & Create input to split different file types 
+
+
+        // Recombine the channels & Create input for bcftools norm
         TABIX_BGZIPTABIX.out.gz_tbi
             .mix(TABIX_TABIX.out.tbi)
-            .map{ meta, input_file, index_file, genome, filetype ->
+            .map{ meta, input_file, index_file ->
                     [ meta, input_file, index_file ] }
-            .set { ch_civic_input }
+            .set { ch_bcfnorm_input }
+
+        // Normalize the vcf input 
+        BCFTOOLS_NORM ( 
+            ch_bcfnorm_input,
+            fasta )
+
+        ch_versions = ch_versions.mix(BCFTOOLS_NORM.out.versions)
+
     }
     
     /*
     ========================================================================================
-        RUN QUERYNATOR MODULES (CGI & CIViC)
+        RUN QUERYNATOR MODULES (CGI & CIViC & CREATE REPORT)
     ========================================================================================
     */
 
@@ -238,7 +269,6 @@ workflow VARIANTMTB {
 
         ch_versions = ch_versions.mix(QUERYNATOR_CGIAPI.out.versions)
     }
-    
     /*
     ------------------------
         CIViC
@@ -246,12 +276,29 @@ workflow VARIANTMTB {
     */
     
     if (params.databases.contains("civic")) {
-        ch_civic_input.view()
 
-        //MODULE: Run querynator query_civic      
-        //QUERYNATOR_CIVICAPI( ch_civic_input )
+        // MODULE: Run querynator query_civic      
+        QUERYNATOR_CIVICAPI( BCFTOOLS_NORM.out.vcf )
 
-        //ch_versions = ch_versions.mix(QUERYNATOR_CIVICAPI.out.versions)
+        ch_versions = ch_versions.mix(QUERYNATOR_CIVICAPI.out.versions)
+    }
+    
+
+    /*
+    ------------------------
+        CREATE REPORT
+    ------------------------
+    */
+    
+    if (params.databases.contains("civic") && params.databases.contains("cgi")) {
+
+        QUERYNATOR_CGIAPI.out.result_dir
+                .join(QUERYNATOR_CIVICAPI.out.result_dir)
+                .set { ch_report_input }
+
+        QUERYNATOR_CREATEREPORT( ch_report_input )
+
+        ch_versions = ch_versions.mix(QUERYNATOR_CREATEREPORT.out.versions)
     }
     
     
@@ -259,7 +306,6 @@ workflow VARIANTMTB {
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
-
     
 
     //

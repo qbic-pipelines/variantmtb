@@ -8,11 +8,11 @@ process TABIX_BGZIPTABIX {
         'quay.io/biocontainers/tabix:1.11--hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(input), val(genome), val(filetype)
+    tuple val(meta), path(input)
 
     output:
-    tuple val(meta), path("*.gz"), path("*.tbi"), val(genome), val(filetype),   emit: gz_tbi
-    path  "versions.yml" ,                                                      emit: versions
+    tuple val(meta), path("*.gz"), path("*.tbi"), emit: gz_tbi
+    path  "versions.yml" ,                        emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -22,8 +22,8 @@ process TABIX_BGZIPTABIX {
     def args2 = task.ext.args2 ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    bgzip  --threads ${task.cpus} -c $args $input > ${input}.gz
-    tabix $args2 ${input}.gz
+    bgzip  --threads ${task.cpus} -c $args $input > ${prefix}.${input.getExtension()}.gz
+    tabix $args2 ${prefix}.${input.getExtension()}.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -34,8 +34,8 @@ process TABIX_BGZIPTABIX {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.gz
-    touch ${prefix}.gz.tbi
+    touch ${prefix}.${input.getExtension()}.gz
+    touch ${prefix}.${input.getExtension()}.gz.tbi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -2,10 +2,10 @@ process QUERYNATOR_CGIAPI {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::querynator=0.1.3"
+    conda "bioconda::querynator=0.3.3"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/querynator:0.1.3':
-        'quay.io/biocontainers/querynator:0.1.3' }"
+        'https://depot.galaxyproject.org/singularity/querynator:0.3.3':
+        'quay.io/biocontainers/querynator:0.3.3--pyh7cba7a3_0' }"
     
     
     input:
@@ -16,14 +16,14 @@ process QUERYNATOR_CGIAPI {
     
     publishDir "${params.outdir}/${meta.id}", mode: 'copy', pattern: "*"
 
-    path("${meta.id}.cgi_results.zip"), emit: zip
-    path("${meta.id}.cgi_results"), emit: results    
-    path("${meta.id}.cgi_results/drug_prescription.tsv"), emit: drug_tsv
-    path("${meta.id}.cgi_results/input01.tsv"), emit: input_tsv
-    path("${meta.id}.cgi_results/mutation_analysis.tsv"), emit: mutation_tsv, optional: true
-    path("${meta.id}.cgi_results/fusion_analysis.tsv"), emit: fusion_tsv, optional: true
-    path("${meta.id}.cgi_results/cna_analysis.tsv"), emit: cnas_tsv, optional: true
-    path("${meta.id}.cgi_results/metadata.txt"), emit: metadata
+    tuple val(meta), path("${meta.id}_cgi")                                                     , emit: result_dir  
+    tuple val(meta), path("${meta.id}_cgi/${meta.id}_cgi.cgi_results.zip")                      , emit: zip
+    tuple val(meta), path("${meta.id}_cgi/${meta.id}_cgi.cgi_results")                          , emit: cgi_results
+    tuple val(meta), path("${meta.id}_cgi/${meta.id}_cgi.cgi_results/*")                        , emit: results
+    tuple val(meta), path("${meta.id}_cgi/vcf_files")                                           , emit: input_vcf_dir
+    tuple val(meta), path("${meta.id}_cgi/vcf_files/${meta.id}_cgi.filtered_variants.vcf")      , emit: input_vcf_filtered
+    tuple val(meta), path("${meta.id}_cgi/vcf_files/${meta.id}_cgi.removed_variants.vcf")       , emit: input_vcf_removed
+
 
     path "versions.yml", emit: versions
 
@@ -38,15 +38,17 @@ process QUERYNATOR_CGIAPI {
     def cnas_file = cnas ? "--cnas ${cnas}" : ''
     
     """
-    querynator query-api-cgi \
-        $mutations_file \
-        $translocation_file \
-        $cnas_file \
-        --output $prefix \
-        --cancer $cancer \
-        --genome $genome \
-        --token $token \
-        --email $email \
+    querynator query-api-cgi \\
+        $mutations_file \\
+        $translocation_file \\
+        $cnas_file \\
+        --outdir ${prefix}_cgi \\
+        --cancer $cancer \\
+        --genome $genome \\
+        --token $token \\
+        --email $email \\
+        --filter_vep \\
+        $args
     
 
     cat <<-END_VERSIONS > versions.yml

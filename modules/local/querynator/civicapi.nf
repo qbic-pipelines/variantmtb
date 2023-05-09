@@ -2,24 +2,27 @@ process QUERYNATOR_CIVICAPI {
     tag "$meta.id"
     label 'process_low'
 
-    // conda "bioconda::querynator=0.1.3"
-    // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    //     'https://depot.galaxyproject.org/singularity/querynator:0.2.1':
-    //     'https://hub.docker.com/r/mvp9/querynator' }"
+    conda "bioconda::querynator=0.3.3"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/querynator:0.3.3':
+        'quay.io/biocontainers/querynator:0.3.3--pyh7cba7a3_0' }"
     
-    container "mvp9/querynator:0.2.1"
     
     input:
 
-    tuple val(meta), path(input_file), path(index_file)
+    tuple val(meta), path(input_file)
 
     output:
     
     publishDir "${params.outdir}/${meta.id}", mode: 'copy', pattern: "*"
 
-    // path("${meta.id}")                      , emit: results
-    // path("${meta.id}/civic_results.tsv")    , emit: civic_table
-    // path("${meta.id}/metadata.txt")         , emit: metadata
+    tuple val(meta), path("${meta.id}_civic")                                                       , emit: result_dir
+    tuple val(meta), path("${meta.id}_civic/${meta.id}_civic.civic_results.tsv")                    , emit: civic_table
+    tuple val(meta), path("${meta.id}_civic/vcf_files")                                             , emit: input_vcf_dir
+    tuple val(meta), path("${meta.id}_civic/vcf_files/${meta.id}_civic.filtered_variants.vcf")      , emit: input_vcf_filtered
+    tuple val(meta), path("${meta.id}_civic/vcf_files/${meta.id}_civic.removed_variants.vcf")       , emit: input_vcf_removed
+    tuple val(meta), path("${meta.id}_civic/metadata.txt")                                          , emit: metadata
+
 
     path "versions.yml", emit: versions
 
@@ -31,7 +34,12 @@ process QUERYNATOR_CIVICAPI {
     def prefix = task.ext.prefix ?: "${meta.id}"
     
     """
-    querynator query-api-civic -v $input_file -o $prefix
+    querynator query-api-civic \\
+        --vcf $input_file \\
+        --outdir ${prefix}_civic \\
+        --genome $meta.ref \\
+        --filter_vep \\
+        $args
 
 
     cat <<-END_VERSIONS > versions.yml

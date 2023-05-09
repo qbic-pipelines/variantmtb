@@ -8,11 +8,11 @@ process TABIX_TABIX {
         'quay.io/biocontainers/tabix:1.11--hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(tab), val(genome), val(filetype)
+    tuple val(meta), path(tab)
 
     output:
-    tuple val(meta), path(tab), path("*.tbi"), val(genome), val(filetype),     optional:true, emit: tbi
-    tuple val(meta), path(tab), path("*.csi"), val(genome), val(filetype),     optional:true, emit: csi
+    tuple val(meta), path(tab), path("*.tbi"),     optional:true, emit: tbi
+    tuple val(meta), path(tab), path("*.csi"),     optional:true, emit: csi
     path  "versions.yml"          , emit: versions
 
     when:
