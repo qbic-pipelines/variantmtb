@@ -14,8 +14,6 @@ process QUERYNATOR_CGIAPI {
 
     output:
     
-    publishDir "${params.outdir}/${meta.id}", mode: 'copy', pattern: "*"
-
     tuple val(meta), path("${meta.id}_cgi")                                                     , emit: result_dir  
     tuple val(meta), path("${meta.id}_cgi/${meta.id}_cgi.cgi_results.zip")                      , emit: zip
     tuple val(meta), path("${meta.id}_cgi/${meta.id}_cgi.cgi_results")                          , emit: cgi_results

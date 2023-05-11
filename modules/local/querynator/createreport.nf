@@ -14,8 +14,6 @@ process QUERYNATOR_CREATEREPORT {
 
     output:
     
-    publishDir "${params.outdir}/${meta.id}", mode: 'copy', pattern: "*"
-
     tuple val(meta), path("${meta.id}_report")                                      , emit: report_dir
     tuple val(meta), path("${meta.id}_report/combined_files")                       , emit: combined_files_dir
     tuple val(meta), path("${meta.id}_report/combined_files/*")                     , emit: combined_files

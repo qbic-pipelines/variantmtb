@@ -19,7 +19,7 @@ def checkPathParamList = [
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
-if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+if (params.input) { ch_input = file(params.input) } else { error('Input samplesheet not specified!')}
 
 // Initialize file channels based on params
 fasta              = params.fasta              ? Channel.fromPath(params.fasta).collect()                    : Channel.value([])
@@ -58,8 +58,6 @@ include { QUERYNATOR_CREATEREPORT }     from '../modules/local/querynator/create
 //
 // MODULE: Installed directly from nf-core/modules
 //
-//include { FASTQC                      } from '../modules/nf-core/fastqc/main'
-//include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 include { GUNZIP }                      from '../modules/nf-core/gunzip/main'
 include { TABIX_TABIX }                 from '../modules/nf-core/tabix/tabix/main'
@@ -73,7 +71,6 @@ include { BCFTOOLS_NORM }               from '../modules/nf-core/bcftools/norm/m
 */
 
 // Info required for completion email and summary
-def multiqc_report = []
 
 workflow VARIANTMTB {
 
@@ -89,29 +86,6 @@ workflow VARIANTMTB {
 
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    //
-    // SUBWORKFLOW: Filter vcf file for PASS
-    //              Split VEP fields into tsv
-    //
-    
-
-    //PREPARE_VCF( INPUT_CHECK.out.vcfs )
-
-    //ch_filtered_vcfs.view()
-
-    // ch_split_vep_tsv = PREPARE_VCF.out.split_vep
-    // ch_split_vep_tsv.view()
-
-    // gather versions
-    // ch_filtered_vcfs = PREPARE_VCF.out.vcf
-
-    //
-    // MODULE: Run FastQC
-    //
-    //FASTQC (
-    //    INPUT_CHECK.out.reads
-    //)
-    //ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
     /*
     ========================================================================================
@@ -119,8 +93,13 @@ workflow VARIANTMTB {
     ========================================================================================
     */
 
-    dbs = params.databases?.tokenize(',')
-    println(dbs)
+    // CHECK PARAMETERS
+
+     if (params.databases.contains("cgi") & !params.cgi_email ) {error("No E-mail address associated to CGI specified!")}
+     if (params.databases.contains("cgi") & !params.cgi_token ) {error("No CGI token specified!")}
+     if (params.databases.contains("cgi") & !params.cgi_cancer_type ) {error("Please include the cancer types to query CGI for!")}
+    if (params.databases.contains("civic") & !params.fasta ) {error("The reference sequence of the vcf file is missing!")}
+
 
     INPUT_CHECK.out.input_row_vals
                             .map { meta, input_file, genome, filetype, compressed ->
@@ -140,29 +119,7 @@ workflow VARIANTMTB {
     
 
     if (params.databases.contains("cgi")) {
-        // separate gzipped & unzipped files also separate mutations from other input for CIViC
-        // ch_input
-        //         .branch {
-        //             meta, input_file ->
-        //                 compressed_files : meta["compressed"] == 'compressed'
-        //                     return [ meta, input_file ]
-        //                 uncompressed_files : meta["compressed"] == 'uncompressed'
-        //                     return [ meta, input_file ]
 
-        //             }
-        //         .set { ch_input_compressed_split }
-
-        // // MODULE: gunzip compressed files
-        // GUNZIP( ch_input_compressed_split.compressed_files )
-
-        // ch_versions = ch_versions.mix(GUNZIP.out.versions)
-
-        // // Recombine the channels & Create input to split different file types 
-        // ch_input_compressed_split.uncompressed_files
-        //     .mix(GUNZIP.out.gunzip)
-        //     .set { ch_uncompressed_input }
-
-        
         //separate different filetypes for cgi input (mutations, translocations, cnas)
         ch_input
             .branch {
@@ -211,8 +168,7 @@ workflow VARIANTMTB {
     */
 
     if (params.databases.contains("civic")) {
-        
-    
+
         ch_input.branch {
                 meta, input_file ->
                 compressed_mutations : meta["compressed"] == 'compressed' & meta["filetype"] == 'mutations'
@@ -228,19 +184,23 @@ workflow VARIANTMTB {
         
         ch_versions = ch_versions.mix(TABIX_TABIX.out.versions)
         
-        // //bgzip & tabix uncompressed files
+        // bgzip & tabix uncompressed files
         TABIX_BGZIPTABIX( ch_input_mutation_compressed_split.uncompressed_mutations )
 
         ch_versions = ch_versions.mix(TABIX_BGZIPTABIX.out.versions)
 
-
+        // Recombine tabix & gzipped input
+        ch_input_mutation_compressed_split.compressed_mutations
+            .join(TABIX_TABIX.out.tbi)
+            .set { ch_input_tabix }
 
         // Recombine the channels & Create input for bcftools norm
         TABIX_BGZIPTABIX.out.gz_tbi
-            .mix(TABIX_TABIX.out.tbi)
+            .mix(ch_input_tabix)
             .map{ meta, input_file, index_file ->
                     [ meta, input_file, index_file ] }
             .set { ch_bcfnorm_input }
+
 
         // Normalize the vcf input 
         BCFTOOLS_NORM ( 
@@ -306,26 +266,6 @@ workflow VARIANTMTB {
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
-    
-
-    //
-    // MODULE: MultiQC
-
-    //workflow_summary    = WorkflowVariantmtb.paramsSummaryMultiqc(workflow, summary_params)
-    //ch_workflow_summary = Channel.value(workflow_summary)
-
-    //ch_multiqc_files = Channel.empty()
-    //ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
-    //ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
-    //ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-    //ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
-    //ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
-
-    //MULTIQC (
-    //    ch_multiqc_files.collect()
-    //)
-    //multiqc_report = MULTIQC.out.report.toList()
-    //ch_versions    = ch_versions.mix(MULTIQC.out.versions)
 
 }
 
@@ -352,7 +292,7 @@ def create_cgi_cancer_type_string(cancer_type) {
 
 workflow.onComplete {
     if (params.email || params.email_on_fail) {
-        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
+        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log)
     }
     NfcoreTemplate.summary(workflow, params, log)
 }

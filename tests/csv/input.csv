@@ -1,2 +1,2 @@
-sample,vcf,genome
-test_sample,/mnt/volume/workdir/masterthesis/vcf_files/7375.vcf,hg19
+sample,vcf,genome,filetype
+test_sample,/mnt/volume/workdir/masterthesis/vcf_files/7375.vcf,hg19,mutations

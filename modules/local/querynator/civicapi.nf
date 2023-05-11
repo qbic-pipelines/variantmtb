@@ -14,8 +14,6 @@ process QUERYNATOR_CIVICAPI {
 
     output:
     
-    publishDir "${params.outdir}/${meta.id}", mode: 'copy', pattern: "*"
-
     tuple val(meta), path("${meta.id}_civic")                                                       , emit: result_dir
     tuple val(meta), path("${meta.id}_civic/${meta.id}_civic.civic_results.tsv")                    , emit: civic_table
     tuple val(meta), path("${meta.id}_civic/vcf_files")                                             , emit: input_vcf_dir
