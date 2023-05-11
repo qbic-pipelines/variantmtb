@@ -200,7 +200,7 @@ def check_samplesheet(file_in, file_out):
         This function checks that the samplesheet follows the following structure,
         see also the `viral recon samplesheet`_::
 
-            sample,vcf,genome
+            sample,vcf,genome,filetype
             SAMPLE1,SAMPLE1.vcf.gz,hg19,mutations
             SAMPLE2,SAMPLE2.tsv,GRCh37,translocations
             SAMPLE3,SAMPLE3.vcf,hg19,mutations
