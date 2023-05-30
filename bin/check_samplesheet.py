@@ -60,7 +60,7 @@ class RowChecker:
         Args:
             sample_col (str): The name of the column that contains the sample name
                 (default "sample").
-            filename_col (str): The name of the column that input file path.
+            filename_col (str): The name of the column that contains the input file path.
             genome_col (str): The name of the column that contains the reference genome.
                 (default "GRCh37")
             filetype_col (str): The name of the column that contains the type of the input file
