@@ -10,7 +10,11 @@ process QUERYNATOR_CGIAPI {
     
     input:
 
-    tuple val(meta), path(mutations), path(translocations), path(cnas), val(cancer), val(genome), val(token), val(email)
+    tuple val(meta), path(mutations), path(translocations), path(cnas)
+    val(cancer)
+    val(genome)
+    val(token)
+    val(email)
 
     output:
     

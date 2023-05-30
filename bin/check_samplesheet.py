@@ -60,7 +60,7 @@ class RowChecker:
         Args:
             sample_col (str): The name of the column that contains the sample name
                 (default "sample").
-            filename_col (str): The name of the column that input file path.
+            filename_col (str): The name of the column that contains the input file path.
             genome_col (str): The name of the column that contains the reference genome.
                 (default "GRCh37")
             filetype_col (str): The name of the column that contains the type of the input file
@@ -200,7 +200,7 @@ def check_samplesheet(file_in, file_out):
         This function checks that the samplesheet follows the following structure,
         see also the `viral recon samplesheet`_::
 
-            sample,vcf,genome,filetype
+            sample,filename,genome,filetype
             SAMPLE1,SAMPLE1.vcf.gz,hg19,mutations
             SAMPLE2,SAMPLE2.tsv,GRCh37,translocations
             SAMPLE3,SAMPLE3.vcf,hg19,mutations
