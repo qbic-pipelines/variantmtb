@@ -95,7 +95,7 @@ workflow VARIANTMTB {
 
     // CHECK PARAMETERS
 
-     if (params.databases.contains("cgi") & !params.cgi_email ) {error("No E-mail address associated to CGI specified!")}
+    if (params.databases.contains("cgi") & !params.cgi_email ) {error("No E-mail address associated to CGI specified!")}
      if (params.databases.contains("cgi") & !params.cgi_token ) {error("No CGI token specified!")}
      if (params.databases.contains("cgi") & !params.cgi_cancer_type ) {error("Please include the cancer types to query CGI for!")}
     if (params.databases.contains("civic") & !params.fasta ) {error("The reference sequence of the vcf file is missing!")}
