@@ -6,3 +6,5 @@ results/
 testing/
 testing*
 *.pyc
+dev_test
+workflows/test_module

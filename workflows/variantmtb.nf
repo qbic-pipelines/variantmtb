@@ -96,18 +96,18 @@ workflow VARIANTMTB {
     // CHECK PARAMETERS
 
     if (params.databases.contains("cgi") & !params.cgi_email ) {error("No E-mail address associated to CGI specified!")}
-     if (params.databases.contains("cgi") & !params.cgi_token ) {error("No CGI token specified!")}
-     if (params.databases.contains("cgi") & !params.cgi_cancer_type ) {error("Please include the cancer types to query CGI for!")}
+    if (params.databases.contains("cgi") & !params.cgi_token ) {error("No CGI token specified!")}
+    if (params.databases.contains("cgi") & !params.cgi_cancer_type ) {error("Please include the cancer types to query CGI for!")}
     if (params.databases.contains("civic") & !params.fasta ) {error("The reference sequence of the vcf file is missing!")}
 
 
     INPUT_CHECK.out.input_row_vals
-                            .map { meta, input_file, genome, filetype, compressed ->
-                            meta["ref"] = genome
-                            meta["filetype"] = filetype
-                            meta["compressed"] = compressed
-                            return [ meta, input_file ] }
-                            .set { ch_input }
+        .map { meta, input_file, genome, filetype, compressed ->
+            meta["ref"] = genome
+            meta["filetype"] = filetype
+            meta["compressed"] = compressed
+            return [ meta, input_file ] }
+        .set { ch_input }
 
 
     /*
@@ -120,7 +120,7 @@ workflow VARIANTMTB {
 
     if (params.databases.contains("cgi")) {
 
-        //separate different filetypes for cgi input (mutations, translocations, cnas)
+        // Separate different filetypes for cgi input (mutations, translocations, cnas)
         ch_input
             .branch {
                 meta, input_file  -> 
@@ -169,8 +169,8 @@ workflow VARIANTMTB {
 
     if (params.databases.contains("civic")) {
 
-        ch_input.branch {
-                meta, input_file ->
+        ch_input
+            .branch { meta, input_file ->
                 compressed_mutations : meta["compressed"] == 'compressed' & meta["filetype"] == 'mutations'
                     return [ meta, input_file ]
                 uncompressed_mutations : meta["compressed"] == 'uncompressed' & meta["filetype"] == 'mutations'
@@ -253,8 +253,8 @@ workflow VARIANTMTB {
     if (params.databases.contains("civic") && params.databases.contains("cgi")) {
 
         QUERYNATOR_CGIAPI.out.result_dir
-                .join(QUERYNATOR_CIVICAPI.out.result_dir)
-                .set { ch_report_input }
+            .join(QUERYNATOR_CIVICAPI.out.result_dir)
+            .set { ch_report_input }
 
         QUERYNATOR_CREATEREPORT( ch_report_input )
 

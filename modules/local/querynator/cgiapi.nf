@@ -5,16 +5,12 @@ process QUERYNATOR_CGIAPI {
     conda "bioconda::querynator=0.3.3"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/querynator:0.3.3':
-        'quay.io/biocontainers/querynator:0.3.3--pyh7cba7a3_0' }"
+        'quay.io/biocontainers/querynator:0.4.1--pyh7cba7a3_0' }"
     
     
     input:
 
-    tuple val(meta), path(mutations), path(translocations), path(cnas)
-    val(cancer)
-    val(genome)
-    val(token)
-    val(email)
+    tuple val(meta), path(mutations), path(translocations), path(cnas), val(cancer), val(genome), val(token), val(email)
 
     output:
     
