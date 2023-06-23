@@ -42,12 +42,12 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK }                 from '../subworkflows/local/input_check'
-include { PREPARE_VCF }                 from '../subworkflows/local/prepare_vcf'
-include { QUERYNATOR_INPUT }            from '../subworkflows/local/create_querynator_input'
-include { QUERYNATOR_CGIAPI }           from '../modules/local/querynator/cgiapi' 
-include { QUERYNATOR_CIVICAPI }         from '../modules/local/querynator/civicapi'
-include { QUERYNATOR_CREATEREPORT }     from '../modules/local/querynator/createreport' 
+include { INPUT_CHECK                   }   from '../subworkflows/local/input_check'
+include { PREPARE_VCF                   }   from '../subworkflows/local/prepare_vcf'
+include { QUERYNATOR_INPUT              }   from '../subworkflows/local/create_querynator_input'
+include { QUERYNATOR_CGIAPI             }   from '../modules/local/querynator/cgiapi' 
+include { QUERYNATOR_CIVICAPI           }   from '../modules/local/querynator/civicapi'
+include { QUERYNATOR_CREATEREPORT       }   from '../modules/local/querynator/createreport' 
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,11 +58,11 @@ include { QUERYNATOR_CREATEREPORT }     from '../modules/local/querynator/create
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
-include { GUNZIP }                      from '../modules/nf-core/gunzip/main'
-include { TABIX_TABIX }                 from '../modules/nf-core/tabix/tabix/main'
-include { TABIX_BGZIPTABIX }            from '../modules/nf-core/tabix/bgziptabix/main'
-include { BCFTOOLS_NORM }               from '../modules/nf-core/bcftools/norm/main'
+include { CUSTOM_DUMPSOFTWAREVERSIONS   }   from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { GUNZIP                        }   from '../modules/nf-core/gunzip/main'
+include { TABIX_TABIX                   }   from '../modules/nf-core/tabix/tabix/main'
+include { TABIX_BGZIPTABIX              }   from '../modules/nf-core/tabix/bgziptabix/main'
+include { BCFTOOLS_NORM                 }   from '../modules/nf-core/bcftools/norm/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,10 +95,10 @@ workflow VARIANTMTB {
 
     // CHECK PARAMETERS
 
-    if (params.databases.contains("cgi") & !params.cgi_email ) {error("No E-mail address associated to CGI specified!")}
-    if (params.databases.contains("cgi") & !params.cgi_token ) {error("No CGI token specified!")}
-    if (params.databases.contains("cgi") & !params.cgi_cancer_type ) {error("Please include the cancer types to query CGI for!")}
-    if (params.databases.contains("civic") & !params.fasta ) {error("The reference sequence of the vcf file is missing!")}
+    if ( params.databases.contains("cgi"    )    & !params.cgi_email         )   { error("No E-mail address associated to CGI specified!"    )}
+    if ( params.databases.contains("cgi"    )    & !params.cgi_token         )   { error("No CGI token specified!"                           )}
+    if ( params.databases.contains("cgi"    )    & !params.cgi_cancer_type   )   { error("Please include the cancer types to query CGI for!" )}
+    if ( params.databases.contains("civic"  )    & !params.fasta             )   { error("The reference sequence of the vcf file is missing!")}
 
 
     INPUT_CHECK.out.input_row_vals
@@ -171,9 +171,9 @@ workflow VARIANTMTB {
 
         ch_input
             .branch { meta, input_file ->
-                compressed_mutations : meta["compressed"] == 'compressed' & meta["filetype"] == 'mutations'
+                compressed_mutations : meta["compressed"] == 'compressed'       & meta["filetype"] == 'mutations'
                     return [ meta, input_file ]
-                uncompressed_mutations : meta["compressed"] == 'uncompressed' & meta["filetype"] == 'mutations'
+                uncompressed_mutations : meta["compressed"] == 'uncompressed'   & meta["filetype"] == 'mutations'
                     return [ meta, input_file ] 
         }
         .set { ch_input_mutation_compressed_split }
