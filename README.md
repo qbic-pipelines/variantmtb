@@ -1,4 +1,5 @@
-# ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_light.png#gh-light-mode-only) ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_dark.png#gh-dark-mode-only)
+# ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_light.png#gh-light-mode-only) 
+<!-- ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_dark.png#gh-dark-mode-only) -->
 
 [![GitHub Actions CI Status](https://github.com/nf-core/variantmtb/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/variantmtb/actions?query=workflow%3A%22nf-core+CI%22)
 [![GitHub Actions Linting Status](https://github.com/nf-core/variantmtb/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/variantmtb/actions?query=workflow%3A%22nf-core+linting%22)
@@ -19,22 +20,25 @@
 
 <!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
 
-**nf-core/variantmtb** is a bioinformatics best-practice analysis pipeline for querying variant databases to investigate the biological and predictive relevance of tumor variants.
+**nf-core/variantmtb** is a bioinformatics best-practice analysis pipeline for querying variant databases to investigate the diagnostic, prognostic and predictive relevance of tumor variants.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
 <!-- TODO nf-core: Add full-sized test dataset and amend the paragraph below if applicable -->
 
-On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources. The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/variantmtb/results).
+<!-- On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources. The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/variantmtb/results). -->
+
+<p align="center">
+    <img title="variantMTB workflow" src="docs/images/variantMTB_workflow.png" width=70%>
+</p>
 
 ## Pipeline summary
 
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
-1. Filter for variants that [PASS](http://samtools.github.io/bcftools/bcftools.html)
-2. Query [Clinvar](https://www.ncbi.nlm.nih.gov/clinvar/)
-3. Query [Oncokb](https://www.oncokb.org/)
-4. Query [Civic](https://civicdb.org/variants/home)
+1. Query [CGI](https://www.cancergenomeinterpreter.org/home)
+2. Query [CIViC](https://civicdb.org/variants/home)
+3. Categorize variants and create an comprehensive HTML report 
 
 ## Quick Start
 
@@ -60,7 +64,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
    <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
 
    ```console
-   nextflow run nf-core/variantmtb --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+   nextflow run qbic-pipelines/variantmtb -r dev --input samplesheet.csv --outdir <OUTDIR> --genome GRCh38 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
    ```
 
 ## Documentation
@@ -69,7 +73,7 @@ The nf-core/variantmtb pipeline comes with documentation about the pipeline [usa
 
 ## Credits
 
-nf-core/variantmtb was originally written by SusiJo.
+nf-core/variantmtb was originally written by SusiJo and mapo9.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
