@@ -1,2 +1,2 @@
 sample,filename,genome,filetype
-test_sample,test.vcf,hg19,mutations
+test_sample,../test_files/test.vcf,GRCh37,mutations

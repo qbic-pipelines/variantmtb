@@ -36,9 +36,11 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
-1. Query [CGI](https://www.cancergenomeinterpreter.org/home)
-2. Query [CIViC](https://civicdb.org/variants/home)
-3. Categorize variants and create an comprehensive HTML report 
+1. Normalize variants [bcftools norm](https://www.htslib.org/doc/1.0/bcftools.html#norm)
+2. Index VCF file [tabix](http://www.htslib.org/doc/tabix.html)
+3. Query [CGI](https://www.cancergenomeinterpreter.org/home)
+4. Query [CIViC](https://civicdb.org/variants/home)
+5. Categorize variants and create an comprehensive HTML report 
 
 ## Quick Start
 
@@ -73,7 +75,7 @@ The nf-core/variantmtb pipeline comes with documentation about the pipeline [usa
 
 ## Credits
 
-nf-core/variantmtb was originally written by SusiJo and mapo9.
+nf-core/variantmtb was originally started by SusiJo and mainly developed by mapo9.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
