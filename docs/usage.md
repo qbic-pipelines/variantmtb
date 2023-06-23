@@ -43,7 +43,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run nf-core/variantmtb -r dev \
+nextflow run qbic-pipelines/variantmtb -r dev \
    --input samplesheet.csv \
    --outdir <OUTDIR> \
    --genome <hg19|GRCh37|hg38|GRCh38> \
