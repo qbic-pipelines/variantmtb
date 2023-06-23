@@ -57,6 +57,8 @@ nextflow run nf-core/variantmtb -r dev \
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
 
+All possible CGI cancer types can be found [here](https://github.com/qbic-pipelines/querynator/blob/master/querynator/query_api/cancertypes.js)
+
 Note that the pipeline will create the following files in your working directory:
 
 ```console
