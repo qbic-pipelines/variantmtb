@@ -1,3 +1,2 @@
-sample,vcf
-00483c0a-faf5-4ee7-96d2-74c602c5ef9a,/home-link/afijo01/data/vcf/TCGA_LIHC.00483c0a-faf5-4ee7-96d2-74c602c5ef9a.wxs.MuTect2.somatic_annotation.vcf
-73756488-5176-4f13-90d8-58cc2b98cdfb,/home-link/afijo01/data/vcf/TCGA_LIHC.73756488-5176-4f13-90d8-58cc2b98cdfb.wxs.MuTect2.somatic_annotation.vcf
+sample,filename,genome,filetype
+test_sample,tests/test_files/test.vcf,GRCh37,mutations

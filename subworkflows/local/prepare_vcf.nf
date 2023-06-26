@@ -2,7 +2,7 @@
 // Quality Filter
 //
 
-include { BCFTOOLS_VIEW     } from '../../modules/nf-core/modules/bcftools/view/main'
+include { BCFTOOLS_VIEW     } from '../../modules/nf-core/bcftools/view/main'
 include { BCFTOOLS_SPLITVEP } from '../../modules/local/bcftools/splitvep'
 
 workflow PREPARE_VCF {

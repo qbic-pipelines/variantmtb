@@ -12,27 +12,31 @@ workflow INPUT_CHECK {
     SAMPLESHEET_CHECK ( samplesheet )
         .csv
         .splitCsv ( header:true, sep:',' )
-        .map { create_vcf_channel(it) }
-        .set { vcfs }
+        .map { create_input_channel(it) }
+        .set { input_row_vals }
 
     emit:
-    vcfs                                     // channel: [ val(meta), [ vcf ] ]
-    versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
+    input_row_vals                                   // channel: [ val(meta), file(input_file), val(genome), val(filetype)  ]
+    versions = SAMPLESHEET_CHECK.out.versions       // channel: [ versions.yml ]
 }
 
-// Function to get list of [ meta, [ vcf ] ]
-def create_vcf_channel(LinkedHashMap row) {
+// Function to get list of [ meta, inputfile, genome, filetype ]
+def create_input_channel(LinkedHashMap row) {
+    
+    // check if input file is compressed
+    def compressed_check = file(row.filename).extension == "gz" ? "compressed" : "uncompressed"
+
     // create meta map
     def meta = [:]
     meta.id         = row.sample
 
     // add path(s) of the fastq file(s) to the meta map
-    def vcf_meta = []
-    if (!file(row.vcf).exists()) {
-        exit 1, "ERROR: Please check input samplesheet -> VCF file does not exist!\n${row.vcf}"
+    def input_meta = []
+    if (!file(row.filename).exists()) {
+        error("ERROR: Please check input samplesheet -> inputfile file does not exist!\n${row.filename}")
     }
     else{
-        vcf_meta = [ meta, [ file(row.vcf) ] ]
+        input_meta =  [ meta, file(row.filename), row.genome, row.filetype, compressed_check ] 
     }
-    return vcf_meta
+    return input_meta
 }

@@ -4,9 +4,8 @@
     - default
     - preprocessing
   files:
-    - path: results/bcftools/pass/00483c0a-faf5-4ee7-96d2-74c602c5ef9a.pass.vcf
-    - path: results/bcftools/pass/73756488-5176-4f13-90d8-58cc2b98cdfb.pass.vcf
-    - path: results/bcftools/split_vep/00483c0a-faf5-4ee7-96d2-74c602c5ef9a.split_vep.tsv
-      md5sum: a5087296a7fdfdc621d37bcc6452e006
-    - path: results/bcftools/split_vep/73756488-5176-4f13-90d8-58cc2b98cdfb.split_vep.tsv
-      md5sum: 8c8a71adfd839f9d79849565b17f2b79
+    - path: results/test_sample/test_sample_civic/metadata.txt
+    - path: results/test_sample/test_sample_civic/test_sample_civic.civic_results.tsv
+    - path: results/test_sample/test_sample_civic/vcf_files/test_sample_civic.filtered_variants.vcf
+    - path: results/test_sample/test_sample_civic/vcf_files/test_sample_civic.removed_variants.vcf
+    - path: results/test_sample/versions.yml

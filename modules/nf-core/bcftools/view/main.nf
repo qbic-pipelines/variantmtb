@@ -2,10 +2,10 @@ process BCFTOOLS_VIEW {
     tag "$meta.id"
     label 'process_medium'
 
-    conda (params.enable_conda ? "bioconda::bcftools=1.15.1" : null)
+    conda "bioconda::bcftools=1.17"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bcftools:1.15.1--h0ea216a_0':
-        'quay.io/biocontainers/bcftools:1.15.1--h0ea216a_0' }"
+        'https://depot.galaxyproject.org/singularity/bcftools:1.17--haef29d1_0':
+        'biocontainers/bcftools:1.17--haef29d1_0' }"
 
     input:
     tuple val(meta), path(vcf), path(index)
@@ -14,7 +14,7 @@ process BCFTOOLS_VIEW {
     path(samples)
 
     output:
-    tuple val(meta), path("*.vcf") , emit: vcf
+    tuple val(meta), path("*.gz") , emit: vcf
     path "versions.yml"           , emit: versions
 
     when:
@@ -28,7 +28,7 @@ process BCFTOOLS_VIEW {
     def samples_file =  samples ? "--samples-file ${samples}" : ""
     """
     bcftools view \\
-        --output ${prefix}.vcf \\
+        --output ${prefix}.vcf.gz \\
         ${regions_file} \\
         ${targets_file} \\
         ${samples_file} \\
