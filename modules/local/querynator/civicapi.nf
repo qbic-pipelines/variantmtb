@@ -4,7 +4,7 @@ process QUERYNATOR_CIVICAPI {
 
     conda "bioconda::querynator=0.4.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/querynator:0.4.1':
+        'https://depot.galaxyproject.org/singularity/querynator:0.4.1--pyh7cba7a3_0':
         'quay.io/biocontainers/querynator:0.4.1--pyh7cba7a3_0' }"
     
     
