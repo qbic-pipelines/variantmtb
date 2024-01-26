@@ -86,11 +86,11 @@ workflow VARIANTMTB {
 
     // CHECK PARAMETERS
 
-    if ( params.databases.contains("cgi"    )    & !params.cgi_email         )   { error("No E-mail address associated to CGI specified!"    )}
-    if ( params.databases.contains("cgi"    )    & !params.cgi_token         )   { error("No CGI token specified!"                           )}
     if ( params.databases.contains("cgi"    )    & !params.cgi_cancer_type   )   { error("Please include the cancer types to query CGI for!" )}
     if ( params.databases.contains("civic"  )    & !params.fasta             )   { error("The reference sequence of the vcf file is missing!")}
 
+    // CHECK SECRETS
+    if ( params.databases.contains("cgi"    )    & System.getenv("NXF_ENABLE_SECRETS") != 'true') { error("Please enable secrets: export NXF_ENABLE_SECRETS='true'")}
 
     INPUT_CHECK.out.input_row_vals
         .map { meta, input_file, genome, filetype, compressed ->
@@ -121,27 +121,24 @@ workflow VARIANTMTB {
                                     [],
                                     [], 
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
-                                    meta["ref"], 
-                                    params.cgi_token, 
-                                    params.cgi_email ]
+                                    meta["ref"]
+                                    ]
                     translocations : meta["filetype"] == 'translocations'
                         return [    meta,
                                     [],
                                     input_file,
                                     [], 
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
-                                    meta["ref"], 
-                                    params.cgi_token, 
-                                    params.cgi_email ]
+                                    meta["ref"]
+                                    ]
                     cnas : meta["filetype"] == 'cnas'
                         return [    meta,
                                     [],
                                     [],
                                     input_file, 
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
-                                    meta["ref"],
-                                    params.cgi_token, 
-                                    params.cgi_email ]
+                                    meta["ref"]
+                                    ]
                 }
             .set { ch_input_filetype_split }
 

@@ -1,6 +1,8 @@
 process QUERYNATOR_CGIAPI {
     tag "$meta.id"
     label 'process_low'
+    secret 'cgi_email'
+    secret 'cgi_token'
 
     conda "bioconda::querynator=0.4.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -10,7 +12,7 @@ process QUERYNATOR_CGIAPI {
     
     input:
 
-    tuple val(meta), path(mutations), path(translocations), path(cnas), val(cancer), val(genome), val(token), val(email)
+    tuple val(meta), path(mutations), path(translocations), path(cnas), val(cancer), val(genome)
 
     output:
     
@@ -43,8 +45,8 @@ process QUERYNATOR_CGIAPI {
         --outdir ${prefix}_cgi \\
         --cancer $cancer \\
         --genome $genome \\
-        --token $token \\
-        --email $email \\
+        --token \${cgi_token} \\
+        --email \${cgi_email} \\
         --filter_vep \\
         $args
     
