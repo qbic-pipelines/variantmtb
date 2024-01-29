@@ -253,16 +253,6 @@
             "description": "Databases which should be queried.",
             "default": "cgi, civic"
         },
-        "cgi_email": {
-            "type": "string",
-            "description": "E-mail address connected to a CGI account, only works together with the respective CGI-token.",
-            "default": null
-        },
-        "cgi_token": {
-            "type": "string",
-            "description": "CGI token of a CGI account, only works together with the respective E-mail address.",
-            "default": null
-        },
         "cgi_cancer_type": {
             "type": "string",
             "description": "Cancer type as input for the CGI query",
