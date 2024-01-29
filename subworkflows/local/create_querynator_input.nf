@@ -15,9 +15,7 @@ workflow QUERYNATOR_INPUT {
     
     ch_cgi_input = input_check_out.map{ meta, input_file, genome -> [ meta, input_file, [], [], 
                                                                 create_cgi_cancer_type_string(params.cgi_cancer_type), 
-                                                                genome, 
-                                                                params.cgi_token, 
-                                                                params.cgi_email ] }
+                                                                genome ] }
 
     // specify between mutations (variants --> vcf), cnas, translocations
     // if (row.vcf.endsWith('.vcf')){
