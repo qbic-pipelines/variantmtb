@@ -7,15 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added`
 
-- [#1](https://github.com/qbic-pipelines/variantmtb/pull/1) - Query to CGI & CIViC. Creation of a comprehensive HTML report. 
-
+- [#1](https://github.com/qbic-pipelines/variantmtb/pull/1) - Query to CGI & CIViC. Creation of a comprehensive HTML report.
 
 ### `Fixed`
 
 ### `Dependencies`
 
 ### `Deprecated`
-
 
 ## v1.0dev - [date]
 
