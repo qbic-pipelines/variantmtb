@@ -193,7 +193,7 @@ workflow VARIANTMTB {
         // Normalize the vcf input 
         BCFTOOLS_NORM ( 
             ch_bcfnorm_input,
-            fasta )
+            fasta.map{ fa -> [ [id:'genome'], fa]} )                // add dummy meta information
 
         ch_versions = ch_versions.mix(BCFTOOLS_NORM.out.versions)
 
