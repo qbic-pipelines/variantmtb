@@ -2,7 +2,7 @@ process QUERYNATOR_CREATEREPORT {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::querynator=0.4.1 -c conda-forge"
+    conda "bioconda::querynator=0.4.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/querynator:0.4.1':
         'quay.io/biocontainers/querynator:0.4.1--pyh7cba7a3_0' }"
