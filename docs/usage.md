@@ -16,11 +16,9 @@ You will need to create a samplesheet with information about the samples you wou
 --input '[path to samplesheet file]'
 ```
 
-
 ### Full samplesheet
 
-A final samplesheet may look something like the one below. 
-
+A final samplesheet may look something like the one below.
 
 ```console
 sample,filename,genome,filetype
@@ -29,12 +27,12 @@ sample_2,file_2.vcf,GRCh38,mutations
 sample_3,file_3.vcf,GRCh38,mutations
 ```
 
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name.  |
-| `filename` | Full path to VCF file for Illumina short reads 1. File can be gzipped and have the extension ".vcf.gz", ".vcf" or ".tsv".gz".                                                             |
-| `genome` | The reference genome used in variant calling of this file.                                                             |
-| `filetype` | Either "mutations" for variant files, "cnas" for copy number alterations files or "translocations" for translocation files.                                                             |
+| Column     | Description                                                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `sample`   | Custom sample name.                                                                                                           |
+| `filename` | Full path to VCF file for Illumina short reads 1. File can be gzipped and have the extension ".vcf.gz", ".vcf" or ".tsv".gz". |
+| `genome`   | The reference genome used in variant calling of this file.                                                                    |
+| `filetype` | Either "mutations" for variant files, "cnas" for copy number alterations files or "translocations" for translocation files.   |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 

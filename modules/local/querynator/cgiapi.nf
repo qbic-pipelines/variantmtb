@@ -1,20 +1,22 @@
 process QUERYNATOR_CGIAPI {
     tag "$meta.id"
     label 'process_low'
+    secret 'cgi_email'
+    secret 'cgi_token'
 
     conda "bioconda::querynator=0.4.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/querynator:0.4.1':
         'quay.io/biocontainers/querynator:0.4.1--pyh7cba7a3_0' }"
-    
-    
+
+
     input:
 
-    tuple val(meta), path(mutations), path(translocations), path(cnas), val(cancer), val(genome), val(token), val(email)
+    tuple val(meta), path(mutations), path(translocations), path(cnas), val(cancer), val(genome)
 
     output:
-    
-    tuple val(meta), path("${meta.id}_cgi")                                                     , emit: result_dir  
+
+    tuple val(meta), path("${meta.id}_cgi")                                                     , emit: result_dir
     tuple val(meta), path("${meta.id}_cgi/${meta.id}_cgi.cgi_results.zip")                      , emit: zip
     tuple val(meta), path("${meta.id}_cgi/${meta.id}_cgi.cgi_results")                          , emit: cgi_results
     tuple val(meta), path("${meta.id}_cgi/${meta.id}_cgi.cgi_results/*")                        , emit: results
@@ -31,10 +33,10 @@ process QUERYNATOR_CGIAPI {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def mutations_file = mutations ? "--mutations ${mutations}" : "" 
+    def mutations_file = mutations ? "--mutations ${mutations}" : ""
     def translocation_file = translocations ? "--translocations ${translocations}" : ''
     def cnas_file = cnas ? "--cnas ${cnas}" : ''
-    
+
     """
     querynator query-api-cgi \\
         $mutations_file \\
@@ -43,11 +45,11 @@ process QUERYNATOR_CGIAPI {
         --outdir ${prefix}_cgi \\
         --cancer $cancer \\
         --genome $genome \\
-        --token $token \\
-        --email $email \\
+        --token \${cgi_token} \\
+        --email \${cgi_email} \\
         --filter_vep \\
         $args
-    
+
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

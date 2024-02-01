@@ -6,14 +6,14 @@ process QUERYNATOR_CIVICAPI {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/querynator:0.4.1':
         'quay.io/biocontainers/querynator:0.4.1--pyh7cba7a3_0' }"
-    
-    
+
+
     input:
 
     tuple val(meta), path(input_file)
 
     output:
-    
+
     tuple val(meta), path("${meta.id}_civic")                                                       , emit: result_dir
     tuple val(meta), path("${meta.id}_civic/${meta.id}_civic.civic_results.tsv")                    , emit: civic_table
     tuple val(meta), path("${meta.id}_civic/vcf_files")                                             , emit: input_vcf_dir
@@ -30,7 +30,7 @@ process QUERYNATOR_CIVICAPI {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    
+
     """
     querynator query-api-civic \\
         --vcf $input_file \\

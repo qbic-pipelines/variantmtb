@@ -1,4 +1,5 @@
-# ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_light.png#gh-light-mode-only) 
+# ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_light.png#gh-light-mode-only)
+
 <!-- ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_dark.png#gh-dark-mode-only) -->
 
 [![GitHub Actions CI Status](https://github.com/nf-core/variantmtb/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/variantmtb/actions?query=workflow%3A%22nf-core+CI%22)
@@ -40,7 +41,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 2. Index VCF file [tabix](http://www.htslib.org/doc/tabix.html)
 3. Query [CGI](https://www.cancergenomeinterpreter.org/home)
 4. Query [CIViC](https://civicdb.org/variants/home)
-5. Categorize variants and create an comprehensive HTML report 
+5. Categorize variants and create an comprehensive HTML report
 
 ## Quick Start
 
