@@ -234,22 +234,26 @@ class NfcoreTemplate {
     //
     public static String dashedLine(monochrome_logs) {
         Map colors = logColours(monochrome_logs)
-        return "-${colors.dim}----------------------------------------------------${colors.reset}-"
+        return "-${colors.dim}------------------------------------------------------------------------------${colors.reset}-"
     }
 
     //
-    // nf-core logo
+    // QBiC logo
     //
     public static String logo(workflow, monochrome_logs) {
         Map colors = logColours(monochrome_logs)
         String.format(
             """\n
             ${dashedLine(monochrome_logs)}
-                                                    ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
-            ${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'${colors.reset}
-            ${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
-            ${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
-                                                    ${colors.green}`._,._,\'${colors.reset}
+
+                                                                            ${colors.blue}______________${colors.reset}
+                                                                           ${colors.blue}|              |${colors.reset}
+              __ _| |__ (_) ___ _ __ (_)_ __   ___| (_)_ __   ___  ___     ${colors.blue}|              |${colors.reset}
+             / _` | '_ \\| |/ __| '_ \\| | '_ \\ / _ \\ | | '_ \\ / _ \\/ __|    ${colors.blue}|    ${colors.white}__  _   _${colors.blue} |${colors.reset}
+            | (_| | |_) | | (__| |_) | | |_) |  __/ | | | | |  __/\\__ \\    ${colors.blue}|   ${colors.white}|  ||_|.|${colors.blue}  |${colors.reset}
+             \\__, |_.__/|_|\\___| .__/|_| .__/ \\___|_|_|_| |_|\\___||___/    ${colors.blue}|   ${colors.white}|__||_|||_${colors.blue} |${colors.reset}
+                |_|            |_|     |_|                                 ${colors.blue}|      ${colors.white}`${colors.blue}       |${colors.reset}
+                                                                           ${colors.blue}|______________|       ${colors.reset}     
             ${colors.purple}  ${workflow.manifest.name} v${workflow.manifest.version}${colors.reset}
             ${dashedLine(monochrome_logs)}
             """.stripIndent()
