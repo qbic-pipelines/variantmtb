@@ -6,14 +6,12 @@
 
 
 //TODO check which of these imports are used and remove the unused ones
-// include { INPUT_CHECK                   }   from '../subworkflows/local/input_check'
 include { PREPARE_VCF                   }   from '../subworkflows/local/prepare_vcf'
-include { QUERYNATOR_INPUT              }   from '../subworkflows/local/create_querynator_input'
 include { QUERYNATOR_CGIAPI             }   from '../modules/local/querynator/cgiapi' 
 include { QUERYNATOR_CIVICAPI           }   from '../modules/local/querynator/civicapi'
 include { QUERYNATOR_CREATEREPORT       }   from '../modules/local/querynator/createreport' 
 
-// include { CUSTOM_DUMPSOFTWAREVERSIONS   }   from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { CUSTOM_DUMPSOFTWAREVERSIONS   }   from '../modules/nf-core/custom/dumpsoftwareversions/main.nf'
 include { GUNZIP                        }   from '../modules/nf-core/gunzip/main'
 include { TABIX_TABIX                   }   from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIPTABIX              }   from '../modules/nf-core/tabix/bgziptabix/main'
@@ -219,12 +217,12 @@ workflow VARIANTMTB {
     
     //TODO uncomment or remove if deprecated
     // Dump Software versions
-    // CUSTOM_DUMPSOFTWAREVERSIONS (
-    //     ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    // )
-    //
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
+
     // Collate and save software versions
-    //
+
     softwareVersionsToYAML(ch_versions)
         .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
         .set { ch_collated_versions }
