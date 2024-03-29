@@ -169,13 +169,34 @@ def nfCoreLogo(monochrome_logs=true) {
         """.stripIndent()
     )
 }
+//
+// QBiC logo
+//
+def qbicLogo(monochrome_logs=true) {
+    Map colors = logColours(monochrome_logs)
+    String.format(
+        """\n
+        ${dashedLine(monochrome_logs)}
+                                                                        ${colors.blue}______________${colors.reset}
+                                                                       ${colors.blue}|              |${colors.reset}
+          __ _| |__ (_) ___ _ __ (_)_ __   ___| (_)_ __   ___  ___     ${colors.blue}|              |${colors.reset}
+         / _` | '_ \\| |/ __| '_ \\| | '_ \\ / _ \\ | | '_ \\ / _ \\/ __|    ${colors.blue}|    ${colors.white}__  _   _${colors.blue} |${colors.reset}
+        | (_| | |_) | | (__| |_) | | |_) |  __/ | | | | |  __/\\__ \\    ${colors.blue}|   ${colors.white}|  ||_|.|${colors.blue}  |${colors.reset}
+         \\__, |_.__/|_|\\___| .__/|_| .__/ \\___|_|_|_| |_|\\___||___/    ${colors.blue}|   ${colors.white}|__||_|||_${colors.blue} |${colors.reset}
+            |_|            |_|     |_|                                 ${colors.blue}|      ${colors.white}`${colors.blue}       |${colors.reset}
+                                                                       ${colors.blue}|______________|       ${colors.reset}     
+        ${colors.purple}  ${workflow.manifest.name} v${workflow.manifest.version}${colors.reset}
+        ${dashedLine(monochrome_logs)}
+            """.stripIndent()
+    )
+}
 
 //
 // Return dashed line
 //
 def dashedLine(monochrome_logs=true) {
     Map colors = logColours(monochrome_logs)
-    return "-${colors.dim}----------------------------------------------------${colors.reset}-"
+            return "-${colors.dim}------------------------------------------------------------------------------${colors.reset}-"
 }
 
 //

@@ -40,11 +40,6 @@ workflow VARIANTMTB {
 
 
     main:
-    // INPUT_CHECK (
-    //     ch_input
-    // )
-    // ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
-
 
     /*
     ========================================================================================

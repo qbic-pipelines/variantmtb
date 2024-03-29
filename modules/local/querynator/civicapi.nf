@@ -32,6 +32,10 @@ process QUERYNATOR_CIVICAPI {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
+    # set path to civicpy cache
+    export CIVICPY_CACHE_FILE=${workDir}/.civicpy/cache.pkl
+
+    # run querynator
     querynator query-api-civic \\
         --vcf $input_file \\
         --outdir ${prefix}_civic \\
