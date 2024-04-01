@@ -6,7 +6,6 @@
 
 
 //TODO check which of these imports are used and remove the unused ones
-include { PREPARE_VCF                   }   from '../subworkflows/local/prepare_vcf'
 include { QUERYNATOR_CGIAPI             }   from '../modules/local/querynator/cgiapi'
 include { QUERYNATOR_CIVICAPI           }   from '../modules/local/querynator/civicapi'
 include { QUERYNATOR_CREATEREPORT       }   from '../modules/local/querynator/createreport'
@@ -18,9 +17,7 @@ include { TABIX_BGZIPTABIX              }   from '../modules/nf-core/tabix/bgzip
 include { BCFTOOLS_NORM                 }   from '../modules/nf-core/bcftools/norm/main'
 
 include { paramsSummaryMap       } from 'plugin/nf-validation'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_variantmtb_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -57,10 +57,6 @@ workflow NFCORE_VARIANTMTB {
         versions
     )
 
-    // emit:
-    // TODO keep or remove
-    // multiqc_report = VARIANTMTB.out.multiqc_report // channel: /path/to/multiqc_report.html
-
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,8 +99,6 @@ workflow {
         params.outdir,
         params.monochrome_logs,
         params.hook_url
-        //TODO keep or remove
-        // NFCORE_VARIANTMTB.out.multiqc_report
     )
 }
 

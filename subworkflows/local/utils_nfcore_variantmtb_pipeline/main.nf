@@ -104,8 +104,6 @@ workflow PIPELINE_COMPLETION {
     outdir          //    path: Path to output directory where results will be published
     monochrome_logs // boolean: Disable ANSI colour codes in log output
     hook_url        //  string: hook URL for notifications
-    // TODO keep or remove
-    // multiqc_report  //  string: Path to MultiQC report
 
     main:
 
@@ -134,7 +132,7 @@ workflow PIPELINE_COMPLETION {
 */
 //
 // Check and validate pipeline parameters
-//TODO
+//
 def validateInputParameters() {
     genomeExistsError()
 }

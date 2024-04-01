@@ -19,7 +19,7 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
+<!-- nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
 
 **qbic-pipelines/variantmtb** is a bioinformatics best-practice analysis pipeline for querying variant databases to investigate the diagnostic, prognostic and predictive relevance of tumor variants.
 
@@ -35,7 +35,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 ## Pipeline summary
 
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
+<!-- nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
 1. Normalize variants [bcftools norm](https://www.htslib.org/doc/1.0/bcftools.html#norm)
 2. Index VCF file [tabix](http://www.htslib.org/doc/tabix.html)
@@ -64,7 +64,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 4. Start running your own analysis!
 
-   <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
+   <!-- nf-core: Update the example "typical command" below used to run the pipeline -->
 
    ```console
    nextflow run qbic-pipelines/variantmtb -r dev --input samplesheet.csv --outdir <OUTDIR> --genome GRCh38 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
@@ -93,7 +93,7 @@ For further information or help, don't hesitate to get in touch on the [Slack `#
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
 <!-- If you use nf-core/variantmtb for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
 
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
+<!-- nf-core: Add bibliography of tools and data used in your pipeline -->
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
