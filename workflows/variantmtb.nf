@@ -16,7 +16,6 @@ include { TABIX_TABIX                   }   from '../modules/nf-core/tabix/tabix
 include { TABIX_BGZIPTABIX              }   from '../modules/nf-core/tabix/bgziptabix/main'
 include { BCFTOOLS_NORM                 }   from '../modules/nf-core/bcftools/norm/main'
 
-include { paramsSummaryMap       } from 'plugin/nf-validation'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 
 /*
