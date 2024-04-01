@@ -56,11 +56,13 @@ This will launch the pipeline with the `docker` configuration profile. See below
 ### Using CGI
 
 If you wish to query the [Cancer Genome Interpreter (CGI)](https://www.cancergenomeinterpreter.org/home), you will need to create a free account and provide your credentials to the pipeline via [nextflow secretes](https://www.nextflow.io/docs/latest/secrets.html). This step should only be required before the first run.
+
 ```console
 export NXF_ENABLE_SECRETS=true
 nextflow secrets set cgi_email my-account@whatever.com
 nextflow secrets set cgi_token f08ffMYTOKEN97fr3
 ```
+
 All possible CGI cancer types can be found [here](https://github.com/qbic-pipelines/querynator/blob/master/querynator/query_api/cancertypes.js)
 
 Note that the pipeline will create the following files in your working directory:
