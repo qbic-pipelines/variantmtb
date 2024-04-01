@@ -7,9 +7,9 @@
 
 //TODO check which of these imports are used and remove the unused ones
 include { PREPARE_VCF                   }   from '../subworkflows/local/prepare_vcf'
-include { QUERYNATOR_CGIAPI             }   from '../modules/local/querynator/cgiapi' 
+include { QUERYNATOR_CGIAPI             }   from '../modules/local/querynator/cgiapi'
 include { QUERYNATOR_CIVICAPI           }   from '../modules/local/querynator/civicapi'
-include { QUERYNATOR_CREATEREPORT       }   from '../modules/local/querynator/createreport' 
+include { QUERYNATOR_CREATEREPORT       }   from '../modules/local/querynator/createreport'
 
 include { CUSTOM_DUMPSOFTWAREVERSIONS   }   from '../modules/nf-core/custom/dumpsoftwareversions/main.nf'
 include { GUNZIP                        }   from '../modules/nf-core/gunzip/main'
@@ -41,12 +41,11 @@ workflow VARIANTMTB {
 
     /*
     ========================================================================================
-       PREPARE INPUT FOR THE DIFFERENT QUERYNATOR QUERIES
+                PREPARE INPUT FOR THE DIFFERENT QUERYNATOR QUERIES
     ========================================================================================
     */
 
     // CHECK PARAMETERS
-
     if ( params.databases.contains("cgi"    )    & !params.cgi_cancer_type   )   { error("Please include the cancer types to query CGI for!" )}
     if ( params.databases.contains("civic"  )    & !params.fasta             )   { error("The reference sequence of the vcf file is missing!")}
 
@@ -68,19 +67,17 @@ workflow VARIANTMTB {
     ------------------------
     */
 
-    
-
     if (params.databases.contains("cgi")) {
 
         // Separate different filetypes for cgi input (mutations, translocations, cnas)
         ch_input
             .branch {
-                meta, input_file  -> 
+                meta, input_file  ->
                     mutations : meta["filetype"] == 'mutations'
                         return [    meta,
                                     input_file,
                                     [],
-                                    [], 
+                                    [],
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
                                     meta["ref"]
                                     ]
@@ -88,7 +85,7 @@ workflow VARIANTMTB {
                         return [    meta,
                                     [],
                                     input_file,
-                                    [], 
+                                    [],
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
                                     meta["ref"]
                                     ]
@@ -96,7 +93,7 @@ workflow VARIANTMTB {
                         return [    meta,
                                     [],
                                     [],
-                                    input_file, 
+                                    input_file,
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
                                     meta["ref"]
                                     ]
@@ -105,7 +102,7 @@ workflow VARIANTMTB {
 
         // Recombine the channels & Create querynator CGI input
         ch_input_filetype_split.mutations
-            .mix (ch_input_filetype_split.translocations, 
+            .mix (ch_input_filetype_split.translocations,
                     ch_input_filetype_split.cnas )
             .set { ch_cgi_input }
     }
@@ -123,16 +120,14 @@ workflow VARIANTMTB {
                 compressed_mutations : meta["compressed"] == 'compressed'       & meta["filetype"] == 'mutations'
                     return [ meta, input_file ]
                 uncompressed_mutations : meta["compressed"] == 'uncompressed'   & meta["filetype"] == 'mutations'
-                    return [ meta, input_file ] 
+                    return [ meta, input_file ]
         }
         .set { ch_input_mutation_compressed_split }
-        
-        
+
         // Tabix compressed files
         TABIX_TABIX( ch_input_mutation_compressed_split.compressed_mutations )
-        
         ch_versions = ch_versions.mix(TABIX_TABIX.out.versions)
-        
+
         // bgzip & tabix uncompressed files
         TABIX_BGZIPTABIX( ch_input_mutation_compressed_split.uncompressed_mutations )
 
@@ -153,9 +148,8 @@ workflow VARIANTMTB {
         ch_bcfnorm_meta2 = ch_bcfnorm_input
             .map{ meta, input_file, index_file -> meta["ref"]}
 
-
-        // Normalize the vcf input 
-        BCFTOOLS_NORM ( 
+        // Normalize the vcf input
+        BCFTOOLS_NORM (
             ch_bcfnorm_input,
             ch_bcfnorm_meta2.combine(fasta)
         )
@@ -163,7 +157,7 @@ workflow VARIANTMTB {
         ch_versions = ch_versions.mix(BCFTOOLS_NORM.out.versions)
 
     }
-    
+
     /*
     ========================================================================================
         RUN QUERYNATOR MODULES (CGI & CIViC & CREATE REPORT)
@@ -182,27 +176,28 @@ workflow VARIANTMTB {
 
         ch_versions = ch_versions.mix(QUERYNATOR_CGIAPI.out.versions)
     }
+
     /*
     ------------------------
         CIViC
     ------------------------
     */
-    
+
     if (params.databases.contains("civic")) {
 
-        // MODULE: Run querynator query_civic      
+        // MODULE: Run querynator query_civic
         QUERYNATOR_CIVICAPI( BCFTOOLS_NORM.out.vcf )
 
         ch_versions = ch_versions.mix(QUERYNATOR_CIVICAPI.out.versions)
     }
-    
+
 
     /*
     ------------------------
         CREATE REPORT
     ------------------------
     */
-    
+
     if (params.databases.contains("civic") && params.databases.contains("cgi")) {
 
         QUERYNATOR_CGIAPI.out.result_dir
@@ -213,8 +208,8 @@ workflow VARIANTMTB {
 
         ch_versions = ch_versions.mix(QUERYNATOR_CREATEREPORT.out.versions)
     }
-    
-    
+
+
     //TODO uncomment or remove if deprecated
     // Dump Software versions
     CUSTOM_DUMPSOFTWAREVERSIONS (
@@ -235,7 +230,7 @@ workflow VARIANTMTB {
 }
 
 
-// Function that checks whether params.cgi_cancer_types contains the quotations ('') and isnt just a string. 
+// Function that checks whether params.cgi_cancer_types contains the quotations ('') and isnt just a string.
 // If lonely string, adds the quotations, so that cancer types consisting of multiple words can be read by querynator
 def create_cgi_cancer_type_string(cancer_type) {
     if (!params.cgi_cancer_type.contains("'")) {

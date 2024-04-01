@@ -237,7 +237,7 @@ def methodsDescriptionText(mqc_methods_yaml) {
 
 // Function to get list of [ meta, inputfile, genome, filetype ]
 def create_input_channel(LinkedHashMap row) {
-    
+
     // check if input file is compressed
     def compressed_check = file(row.filename).extension == "gz" ? "compressed" : "uncompressed"
 
@@ -246,7 +246,7 @@ def create_input_channel(LinkedHashMap row) {
     meta.id         = row.sample
 
     // add path(s) of the input file(s) to the meta map
-    def input_meta =  [ meta, file(row.filename), row.genome, row.filetype, compressed_check ] 
-    
+    def input_meta =  [ meta, file(row.filename), row.genome, row.filetype, compressed_check ]
+
     return input_meta
 }
