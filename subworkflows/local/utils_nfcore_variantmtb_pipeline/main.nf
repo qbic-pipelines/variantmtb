@@ -16,7 +16,6 @@ include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { dashedLine                } from '../../nf-core/utils_nfcore_pipeline'
 include { nfCoreLogo                } from '../../nf-core/utils_nfcore_pipeline'
-// include { qbicLogo                  } from '../../nf-core/utils_nfcore_pipeline'
 include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 include { workflowCitation          } from '../../nf-core/utils_nfcore_pipeline'
@@ -181,27 +180,28 @@ def genomeExistsError() {
 // Generate methods description for MultiQC
 //
 def toolCitationText() {
-    // TODO nf-core: Optionally add in-text citation tools to this list.
+    // nf-core: Optionally add in-text citation tools to this list.
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
     // Uncomment function in methodsDescriptionText to render in MultiQC report
-    def citation_text = [
-            "Tools used in the workflow included:",
-            "FastQC (Andrews 2010),",
-            "MultiQC (Ewels et al. 2016)",
-            "."
-        ].join(' ').trim()
+    def citation_list = ["Tools used in the workflow included:"]
+    citation_list += params.databases.contains("cgi")   ? "CGI (Tamborero et al. 2018)"  : ""
+    citation_list += params.databases.contains("civic") ? "CIViC (Grifith et al. 2017)"  : ""
+    citation_list += params.databases.contains("civic") ? "CIViCpy (Wagner et al. 2020)" : ""
+    def citation_text = citation_list.join(' ').trim()
 
     return citation_text
 }
 
 def toolBibliographyText() {
-    // TODO nf-core: Optionally add bibliographic entries to this list.
+    // nf-core: Optionally add bibliographic entries to this list.
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "<li>Author (2023) Pub name, Journal, DOI</li>" : "",
     // Uncomment function in methodsDescriptionText to render in MultiQC report
-    def reference_text = [
-            "<li>Andrews S, (2010) FastQC, URL: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).</li>",
-            "<li>Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics , 32(19), 3047–3048. doi: /10.1093/bioinformatics/btw354</li>"
-        ].join(' ').trim()
+    def reference_list = []
+    reference_list += params.databases.contains("cgi")   ? "<li>Tamborero, D., Rubio-Perez, C., Deu-Pons, J., Schroeder, M. P., Vivancos, A., Rovira, A., ... & Lopez-Bigas, N. (2018). Cancer Genome Interpreter annotates the biological and clinical relevance of tumor alterations. Genome medicine, 10, 1-8. https://doi.org/10.1186/s13073-018-0531-8</li>" : ""
+    reference_list += params.databases.contains("civic") ? "<li>Griffith, M., Spies, N. C., Krysiak, K., McMichael, J. F., Coffman, A. C., Danos, A. M., ... & Griffith, O. L. (2017). CIViC is a community knowledgebase for expert crowdsourcing the clinical interpretation of variants in cancer. Nature genetics, 49(2), 170-174. https://doi.org/10.1038/ng.3774</li>" : ""
+    reference_list += params.databases.contains("civic") ? "<li>Wagner, A. H., Kiwala, S., Coffman, A. C., McMichael, J. F., Cotto, K. C., Mooney, T. B., ... & Griffith, M. (2020). CIViCpy: a python software development and analysis toolkit for the CIViC knowledgebase. JCO Clinical Cancer Informatics, 4, 245-253. https://doi.org/10.1200/CCI.19.00127</li>" : ""
+
+    def reference_text = reference_list.join(' ').trim()
 
     return reference_text
 }
@@ -220,9 +220,9 @@ def methodsDescriptionText(mqc_methods_yaml) {
     meta["tool_citations"] = ""
     meta["tool_bibliography"] = ""
 
-    // TODO nf-core: Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
-    // meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
-    // meta["tool_bibliography"] = toolBibliographyText()
+    // nf-core: Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
+    meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
+    meta["tool_bibliography"] = toolBibliographyText()
 
 
     def methods_text = mqc_methods_yaml.text
