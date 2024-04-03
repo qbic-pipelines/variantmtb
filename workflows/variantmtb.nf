@@ -55,7 +55,7 @@ workflow VARIANTMTB {
         .map { meta, input_file, genome, filetype ->
             meta["ref"] = genome
             meta["filetype"] = filetype
-            meta["compressed"] = file(input_file).extension == "gz" ? "compressed" : "uncompressed"
+            meta["compressed"] = input_file.extension == "gz" ? "compressed" : "uncompressed"
             return [ meta, input_file ] }
         .set { ch_input }
 
