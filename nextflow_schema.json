@@ -80,7 +80,7 @@
                     "type": "string",
                     "description": "Databases which should be queried.",
                     "default": "cgi, civic",
-                    "pattern": "^(cgi|civic)(, (cgi|civic))*$"
+                    "pattern": "^(cgi|civic)((,| )+(cgi|civic))*$"
                 },
                 "cgi_cancer_type": {
                     "type": "string",
