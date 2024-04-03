@@ -84,7 +84,7 @@
                 },
                 "cgi_cancer_type": {
                     "type": "string",
-                    "description": "Cancer type as input for the CGI query",
+                    "description": "Cancer type as input for the CGI query. See [here](https://github.com/qbic-pipelines/querynator/blob/master/querynator/query_api/cancertypes.js) for a complete list of supported cancer types.",
                     "default": "\\'Any cancer type\\"
                 }
             },
