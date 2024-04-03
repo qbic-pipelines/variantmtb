@@ -21,7 +21,6 @@ include { VARIANTMTB                } from './workflows/variantmtb'
 include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_nfcore_variantmtb_pipeline'
 include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_nfcore_variantmtb_pipeline'
 
-include { getGenomeAttribute        } from './subworkflows/local/utils_nfcore_variantmtb_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,8 +28,7 @@ include { getGenomeAttribute        } from './subworkflows/local/utils_nfcore_va
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// if specified, fetch fasta file from --genome parameter
-params.fasta = getGenomeAttribute('fasta')
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

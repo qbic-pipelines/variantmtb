@@ -16,14 +16,17 @@ include { TABIX_TABIX                   }   from '../modules/nf-core/tabix/tabix
 include { TABIX_BGZIPTABIX              }   from '../modules/nf-core/tabix/bgziptabix/main'
 include { BCFTOOLS_NORM                 }   from '../modules/nf-core/bcftools/norm/main'
 
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML        } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { getGenomeAttribute            } from '../subworkflows/local/utils_nfcore_variantmtb_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-// Initialize file channels based on params
+// Initialize reference file channel
+// if specified, fetch fasta file from --genome parameter, --fasta has priority
+params.fasta = getGenomeAttribute('fasta')
 fasta              = params.fasta              ? Channel.fromPath(params.fasta).collect()                    : Channel.value([])
 
 workflow VARIANTMTB {
