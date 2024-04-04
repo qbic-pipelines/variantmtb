@@ -16,18 +16,14 @@ include { TABIX_TABIX                   }   from '../modules/nf-core/tabix/tabix
 include { TABIX_BGZIPTABIX              }   from '../modules/nf-core/tabix/bgziptabix/main'
 include { BCFTOOLS_NORM                 }   from '../modules/nf-core/bcftools/norm/main'
 
-include { softwareVersionsToYAML        } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { getGenomeAttribute            } from '../subworkflows/local/utils_nfcore_variantmtb_pipeline'
+include { softwareVersionsToYAML        }   from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { getGenomeAttribute            }   from '../subworkflows/local/utils_nfcore_variantmtb_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-// Initialize reference file channel
-// if specified, fetch fasta file from --genome parameter, --fasta has priority
-params.fasta = getGenomeAttribute('fasta')
-fasta              = params.fasta              ? Channel.fromPath(params.fasta).collect()                    : Channel.value([])
 
 workflow VARIANTMTB {
 
@@ -45,8 +41,8 @@ workflow VARIANTMTB {
     */
 
     // CHECK PARAMETERS
-    if ( params.databases.contains("cgi"    )    & !params.cgi_cancer_type   )   { error("Please include the cancer types to query CGI for!" )}
-    if ( params.databases.contains("civic"  )    & !params.fasta             )   { error("The reference sequence of the vcf file is missing!")}
+    if ( params.databases.contains("cgi"    )    & !params.cgi_cancer_type          )   { error("Please include the cancer types to query CGI for!" )}
+    if ( params.databases.contains("civic"  )    & !params.fasta & !params.genome   )   { error("No reference provided! use --genome or --fasta"    )}
 
     // CHECK SECRETS
     if ( params.databases.contains("cgi"    )    & System.getenv("NXF_ENABLE_SECRETS") != 'true') { error("Please enable secrets: export NXF_ENABLE_SECRETS='true'")}
@@ -59,6 +55,8 @@ workflow VARIANTMTB {
             return [ meta, input_file ] }
         .set { ch_input }
 
+    // if specified, fetch fasta file from --genome parameter, --fasta has priority
+    fasta           = params.fasta              ? Channel.fromPath(params.fasta).collect()   : Channel.fromPath(getGenomeAttribute('fasta')).collect()
 
     /*
     ------------------------
