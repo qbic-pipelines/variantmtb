@@ -76,11 +76,10 @@ The nf-core/variantmtb pipeline comes with documentation about the pipeline [usa
 
 ## Credits
 
-nf-core/variantmtb was originally started by SusiJo and mainly developed by mapo9.
+nf-core/variantmtb was originally started by SusiJo, mainly developed by mapo9 and further contributions by HomoPolyethylen.
 
-We thank the following people for their extensive assistance in the development of this pipeline:
-
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+<!-- nf-core: If applicable, make list of people who have also contributed -->
+<!-- We thank the following people for their extensive assistance in the development of this pipeline: -->
 
 ## Contributions and Support
 
