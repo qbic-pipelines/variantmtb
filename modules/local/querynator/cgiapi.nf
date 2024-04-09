@@ -4,10 +4,10 @@ process QUERYNATOR_CGIAPI {
     secret 'cgi_email'
     secret 'cgi_token'
 
-    conda "bioconda::querynator=0.4.1"
+    conda "bioconda::querynator=0.4.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/querynator:0.4.1':
-        'quay.io/biocontainers/querynator:0.4.1--pyh7cba7a3_0' }"
+        'https://depot.galaxyproject.org/singularity/querynator:0.4.2--pyh7cba7a3_0':
+        'quay.io/biocontainers/querynator:0.4.2--pyh7cba7a3_0' }"
 
 
     input:

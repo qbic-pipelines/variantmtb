@@ -12,10 +12,12 @@ The directories listed below will be created in the results directory after the 
 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following steps:
 
-- [CGI](#cgi)
-- [Preprocessing](#preprocessing)
-- [CIViC](#civic)
-- [Report Generation](#report)
+- [nf-core/variantmtb: Output](#nf-corevariantmtb-output)
+  - [Introduction](#introduction)
+  - [Pipeline overview](#pipeline-overview)
+    - [CGI](#cgi)
+    - [CIViC](#civic)
+    - [Report](#report)
 
 ### CGI
 

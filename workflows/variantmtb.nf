@@ -1,59 +1,23 @@
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    VALIDATE INPUTS
+    IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
-// Validate input parameters
-WorkflowVariantmtb.initialise(params, log)
-
-
-// Check input path parameters to see if they exist
-def checkPathParamList = [
-    params.fasta,
-    params.input,
-    ]
-
-for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
-
-// Check mandatory parameters
-if (params.input) { ch_input = file(params.input) } else { error('Input samplesheet not specified!')}
-
-// Initialize file channels based on params
-fasta              = params.fasta              ? Channel.fromPath(params.fasta).collect()                    : Channel.value([])
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT LOCAL MODULES/SUBWORKFLOWS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-//
-// SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
-//
-include { INPUT_CHECK                   }   from '../subworkflows/local/input_check'
-include { PREPARE_VCF                   }   from '../subworkflows/local/prepare_vcf'
-include { QUERYNATOR_INPUT              }   from '../subworkflows/local/create_querynator_input'
-include { QUERYNATOR_CGIAPI             }   from '../modules/local/querynator/cgiapi' 
+//TODO check which of these imports are used and remove the unused ones
+include { QUERYNATOR_CGIAPI             }   from '../modules/local/querynator/cgiapi'
 include { QUERYNATOR_CIVICAPI           }   from '../modules/local/querynator/civicapi'
-include { QUERYNATOR_CREATEREPORT       }   from '../modules/local/querynator/createreport' 
+include { QUERYNATOR_CREATEREPORT       }   from '../modules/local/querynator/createreport'
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT NF-CORE MODULES/SUBWORKFLOWS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-//
-// MODULE: Installed directly from nf-core/modules
-//
-include { CUSTOM_DUMPSOFTWAREVERSIONS   }   from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { CUSTOM_DUMPSOFTWAREVERSIONS   }   from '../modules/nf-core/custom/dumpsoftwareversions/main.nf'
 include { GUNZIP                        }   from '../modules/nf-core/gunzip/main'
 include { TABIX_TABIX                   }   from '../modules/nf-core/tabix/tabix/main'
 include { TABIX_BGZIPTABIX              }   from '../modules/nf-core/tabix/bgziptabix/main'
 include { BCFTOOLS_NORM                 }   from '../modules/nf-core/bcftools/norm/main'
+
+include { softwareVersionsToYAML        }   from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { getGenomeAttribute            }   from '../subworkflows/local/utils_nfcore_variantmtb_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,45 +25,38 @@ include { BCFTOOLS_NORM                 }   from '../modules/nf-core/bcftools/no
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// Info required for completion email and summary
-
 workflow VARIANTMTB {
 
-    ch_versions = Channel.empty()
+    take:
+    ch_samplesheet // channel: samplesheet read in from --input
+    ch_versions    // channel: versions of the software used in the pipeline, emitted by initialization subworkflow
 
-    //
-    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
-    //
 
-    INPUT_CHECK (
-        ch_input
-    )
-
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
-
+    main:
 
     /*
     ========================================================================================
-       PREPARE INPUT FOR THE DIFFERENT QUERYNATOR QUERIES
+                PREPARE INPUT FOR THE DIFFERENT QUERYNATOR QUERIES
     ========================================================================================
     */
 
     // CHECK PARAMETERS
-
-    if ( params.databases.contains("cgi"    )    & !params.cgi_cancer_type   )   { error("Please include the cancer types to query CGI for!" )}
-    if ( params.databases.contains("civic"  )    & !params.fasta             )   { error("The reference sequence of the vcf file is missing!")}
+    if ( params.databases.contains("cgi"    )    & !params.cgi_cancer_type          )   { error("Please include the cancer types to query CGI for!" )}
+    if ( params.databases.contains("civic"  )    & !params.fasta & !params.genome   )   { error("No reference provided! use --genome or --fasta"    )}
 
     // CHECK SECRETS
     if ( params.databases.contains("cgi"    )    & System.getenv("NXF_ENABLE_SECRETS") != 'true') { error("Please enable secrets: export NXF_ENABLE_SECRETS='true'")}
 
-    INPUT_CHECK.out.input_row_vals
-        .map { meta, input_file, genome, filetype, compressed ->
+    ch_samplesheet
+        .map { meta, input_file, genome, filetype ->
             meta["ref"] = genome
             meta["filetype"] = filetype
-            meta["compressed"] = compressed
+            meta["compressed"] = input_file.extension == "gz" ? "compressed" : "uncompressed"
             return [ meta, input_file ] }
         .set { ch_input }
 
+    // if specified, fetch fasta file from --genome parameter, --fasta has priority
+    fasta           = params.fasta              ? Channel.fromPath(params.fasta).collect()   : Channel.fromPath(getGenomeAttribute('fasta')).collect()
 
     /*
     ------------------------
@@ -107,19 +64,17 @@ workflow VARIANTMTB {
     ------------------------
     */
 
-    
-
     if (params.databases.contains("cgi")) {
 
         // Separate different filetypes for cgi input (mutations, translocations, cnas)
         ch_input
             .branch {
-                meta, input_file  -> 
+                meta, input_file  ->
                     mutations : meta["filetype"] == 'mutations'
                         return [    meta,
                                     input_file,
                                     [],
-                                    [], 
+                                    [],
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
                                     meta["ref"]
                                     ]
@@ -127,7 +82,7 @@ workflow VARIANTMTB {
                         return [    meta,
                                     [],
                                     input_file,
-                                    [], 
+                                    [],
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
                                     meta["ref"]
                                     ]
@@ -135,7 +90,7 @@ workflow VARIANTMTB {
                         return [    meta,
                                     [],
                                     [],
-                                    input_file, 
+                                    input_file,
                                     create_cgi_cancer_type_string(params.cgi_cancer_type),
                                     meta["ref"]
                                     ]
@@ -144,7 +99,7 @@ workflow VARIANTMTB {
 
         // Recombine the channels & Create querynator CGI input
         ch_input_filetype_split.mutations
-            .mix (ch_input_filetype_split.translocations, 
+            .mix (ch_input_filetype_split.translocations,
                     ch_input_filetype_split.cnas )
             .set { ch_cgi_input }
     }
@@ -162,16 +117,14 @@ workflow VARIANTMTB {
                 compressed_mutations : meta["compressed"] == 'compressed'       & meta["filetype"] == 'mutations'
                     return [ meta, input_file ]
                 uncompressed_mutations : meta["compressed"] == 'uncompressed'   & meta["filetype"] == 'mutations'
-                    return [ meta, input_file ] 
+                    return [ meta, input_file ]
         }
         .set { ch_input_mutation_compressed_split }
-        
-        
+
         // Tabix compressed files
         TABIX_TABIX( ch_input_mutation_compressed_split.compressed_mutations )
-        
         ch_versions = ch_versions.mix(TABIX_TABIX.out.versions)
-        
+
         // bgzip & tabix uncompressed files
         TABIX_BGZIPTABIX( ch_input_mutation_compressed_split.uncompressed_mutations )
 
@@ -192,9 +145,8 @@ workflow VARIANTMTB {
         ch_bcfnorm_meta2 = ch_bcfnorm_input
             .map{ meta, input_file, index_file -> meta["ref"]}
 
-
-        // Normalize the vcf input 
-        BCFTOOLS_NORM ( 
+        // Normalize the vcf input
+        BCFTOOLS_NORM (
             ch_bcfnorm_input,
             ch_bcfnorm_meta2.combine(fasta)
         )
@@ -202,7 +154,7 @@ workflow VARIANTMTB {
         ch_versions = ch_versions.mix(BCFTOOLS_NORM.out.versions)
 
     }
-    
+
     /*
     ========================================================================================
         RUN QUERYNATOR MODULES (CGI & CIViC & CREATE REPORT)
@@ -221,27 +173,28 @@ workflow VARIANTMTB {
 
         ch_versions = ch_versions.mix(QUERYNATOR_CGIAPI.out.versions)
     }
+
     /*
     ------------------------
         CIViC
     ------------------------
     */
-    
+
     if (params.databases.contains("civic")) {
 
-        // MODULE: Run querynator query_civic      
+        // MODULE: Run querynator query_civic
         QUERYNATOR_CIVICAPI( BCFTOOLS_NORM.out.vcf )
 
         ch_versions = ch_versions.mix(QUERYNATOR_CIVICAPI.out.versions)
     }
-    
+
 
     /*
     ------------------------
         CREATE REPORT
     ------------------------
     */
-    
+
     if (params.databases.contains("civic") && params.databases.contains("cgi")) {
 
         QUERYNATOR_CGIAPI.out.result_dir
@@ -252,17 +205,29 @@ workflow VARIANTMTB {
 
         ch_versions = ch_versions.mix(QUERYNATOR_CREATEREPORT.out.versions)
     }
-    
-    
-    //Dump Software versions
+
+
+    //TODO uncomment or remove if deprecated
+    // Dump Software versions
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
 
+    // Collate and save software versions
+
+    softwareVersionsToYAML(ch_versions)
+        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
+        .set { ch_collated_versions }
+
+
+    emit:
+
+    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+
 }
 
 
-// Function that checks whether params.cgi_cancer_types contains the quotations ('') and isnt just a string. 
+// Function that checks whether params.cgi_cancer_types contains the quotations ('') and isnt just a string.
 // If lonely string, adds the quotations, so that cancer types consisting of multiple words can be read by querynator
 def create_cgi_cancer_type_string(cancer_type) {
     if (!params.cgi_cancer_type.contains("'")) {
@@ -272,21 +237,6 @@ def create_cgi_cancer_type_string(cancer_type) {
         cgi_cancer_type_string = cancer_type
     }
     return cgi_cancer_type_string
-}
-
-    
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    COMPLETION EMAIL AND SUMMARY
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-workflow.onComplete {
-    if (params.email || params.email_on_fail) {
-        NfcoreTemplate.email(workflow, params, summary_params, projectDir, log)
-    }
-    NfcoreTemplate.summary(workflow, params, log)
 }
 
 /*

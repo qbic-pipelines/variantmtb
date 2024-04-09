@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/variantmtb/master/nextflow_schema.json",
     "title": "nf-core/variantmtb pipeline parameters",
-    "description": "This pipeline queries variant databases to investigate the biological and predictive relevance of tumor variants",
+    "description": "This pipeline queries variant databases to investigate the prognostic, diagnostic and predictive relevance of tumor variants",
     "type": "object",
     "definitions": {
         "input_output_options": {
@@ -15,9 +15,10 @@
                 "input": {
                     "type": "string",
                     "format": "file-path",
+                    "exists": true,
+                    "schema": "assets/schema_input.json",
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.csv$",
-                    "schema": "assets/schema_input.json",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/variantmtb/usage#samplesheet-input).",
                     "fa_icon": "fas fa-file-csv"
@@ -26,7 +27,8 @@
                     "type": "string",
                     "format": "directory-path",
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-                    "fa_icon": "fas fa-folder-open"
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "results"
                 },
                 "email": {
                     "type": "string",
@@ -46,25 +48,19 @@
                 "genome": {
                     "type": "string",
                     "description": "Name of iGenomes reference.",
+                    "enum": ["hg19", "GRCh37", "hg38", "GRCh38"],
                     "fa_icon": "fas fa-book",
                     "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. \n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
                 },
                 "fasta": {
                     "type": "string",
                     "format": "file-path",
+                    "exists": true,
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to FASTA reference file. Must be provided when querying CIViC.",
                     "help_text": "Path to FASTA reference file. Must be provided when querying CIViC.",
                     "fa_icon": "far fa-file-code"
-                },
-                "igenomes_base": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "Directory / URL base for iGenomes references.",
-                    "default": "s3://ngi-igenomes/igenomes",
-                    "fa_icon": "fas fa-cloud-download-alt",
-                    "hidden": true
                 },
                 "igenomes_ignore": {
                     "type": "boolean",
@@ -74,6 +70,26 @@
                     "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
                 }
             }
+        },
+        "knowledgebase_options": {
+            "title": "Knowledgebase options",
+            "type": "object",
+            "description": "Which knowledgebase to query and related options.",
+            "default": "",
+            "properties": {
+                "databases": {
+                    "type": "string",
+                    "description": "Databases which should be queried.",
+                    "default": "cgi, civic",
+                    "pattern": "^(cgi|civic)((,| )+(cgi|civic))*$"
+                },
+                "cgi_cancer_type": {
+                    "type": "string",
+                    "description": "Cancer type as input for the CGI query. See [here](https://github.com/qbic-pipelines/querynator/blob/master/querynator/query_api/cancertypes.js) for a complete list of supported cancer types.",
+                    "default": "\\'Any cancer type\\"
+                }
+            },
+            "required": ["databases"]
         },
         "institutional_config_options": {
             "title": "Institutional config options",
@@ -152,7 +168,7 @@
                     "description": "Maximum amount of time that can be requested for any single job.",
                     "default": "240.h",
                     "fa_icon": "far fa-clock",
-                    "pattern": "^(\\d+\\.?\\s*(s|m|h|day)\\s*)+$",
+                    "pattern": "^(\\d+\\.?\\s*(s|m|h|d|day)\\s*)+$",
                     "hidden": true,
                     "help_text": "Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`"
                 }
@@ -168,6 +184,12 @@
                 "help": {
                     "type": "boolean",
                     "description": "Display help text.",
+                    "fa_icon": "fas fa-question-circle",
+                    "hidden": true
+                },
+                "version": {
+                    "type": "boolean",
+                    "description": "Display version and exit.",
                     "fa_icon": "fas fa-question-circle",
                     "hidden": true
                 },
@@ -200,10 +222,17 @@
                     "fa_icon": "fas fa-palette",
                     "hidden": true
                 },
+                "hook_url": {
+                    "type": "string",
+                    "description": "Incoming hook URL for messaging service",
+                    "fa_icon": "fas fa-people-group",
+                    "help_text": "Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.",
+                    "hidden": true
+                },
                 "tracedir": {
                     "type": "string",
                     "description": "Directory to keep pipeline Nextflow logs and reports.",
-                    "default": "${params.outdir}/pipeline_info",
+                    "default": "results/pipeline_info",
                     "fa_icon": "fas fa-cogs",
                     "hidden": true
                 },
@@ -214,18 +243,26 @@
                     "fa_icon": "fas fa-check-square",
                     "hidden": true
                 },
-                "show_hidden_params": {
+                "validationShowHiddenParams": {
                     "type": "boolean",
                     "fa_icon": "far fa-eye-slash",
                     "description": "Show all params when using `--help`",
                     "hidden": true,
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
                 },
-                "enable_conda": {
+                "validationFailUnrecognisedParams": {
                     "type": "boolean",
-                    "description": "Run this workflow with Conda. You can also use '-profile conda' instead of providing this parameter.",
+                    "fa_icon": "far fa-check-circle",
+                    "description": "Validation of parameters fails when an unrecognised parameter is found.",
                     "hidden": true,
-                    "fa_icon": "fas fa-bacon"
+                    "help_text": "By default, when an unrecognised parameter is found, it returns a warinig."
+                },
+                "validationLenientMode": {
+                    "type": "boolean",
+                    "fa_icon": "far fa-check-circle",
+                    "description": "Validation of parameters in lenient more.",
+                    "hidden": true,
+                    "help_text": "Allows string values that are parseable as numbers or booleans. For further information see [JSONSchema docs](https://github.com/everit-org/json-schema#lenient-mode)."
                 }
             }
         }
@@ -238,6 +275,9 @@
             "$ref": "#/definitions/reference_genome_options"
         },
         {
+            "$ref": "#/definitions/knowledgebase_options"
+        },
+        {
             "$ref": "#/definitions/institutional_config_options"
         },
         {
@@ -246,27 +286,5 @@
         {
             "$ref": "#/definitions/generic_options"
         }
-    ],
-    "properties": {
-        "databases": {
-            "type": "string",
-            "description": "Databases which should be queried.",
-            "default": "cgi, civic"
-        },
-        "cgi_email": {
-            "type": "string",
-            "description": "E-mail address connected to a CGI account, only works together with the respective CGI-token.",
-            "default": null
-        },
-        "cgi_token": {
-            "type": "string",
-            "description": "CGI token of a CGI account, only works together with the respective E-mail address.",
-            "default": null
-        },
-        "cgi_cancer_type": {
-            "type": "string",
-            "description": "Cancer type as input for the CGI query",
-            "default": "\\'Any cancer type\\"
-        }
-    }
+    ]
 }

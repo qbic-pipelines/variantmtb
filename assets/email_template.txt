@@ -4,9 +4,8 @@
   |\\ | |__  __ /  ` /  \\ |__) |__         }  {
   | \\| |       \\__, \\__/ |  \\ |___     \\`-._,-`-,
                                         `._,._,'
-  nf-core/variantmtb v${version}
+  nf-core/variantmtb ${version}
 ----------------------------------------------------
-
 Run Name: $runName
 
 <% if (success){

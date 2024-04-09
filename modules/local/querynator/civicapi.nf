@@ -2,10 +2,10 @@ process QUERYNATOR_CIVICAPI {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::querynator=0.4.1"
+    conda "bioconda::querynator=0.4.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/querynator:0.4.1':
-        'quay.io/biocontainers/querynator:0.4.1--pyh7cba7a3_0' }"
+        'https://depot.galaxyproject.org/singularity/querynator:0.4.2--pyh7cba7a3_0':
+        'quay.io/biocontainers/querynator:0.4.2--pyh7cba7a3_0' }"
 
 
     input:
@@ -32,6 +32,10 @@ process QUERYNATOR_CIVICAPI {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
+    # set path to civicpy cache
+    export CIVICPY_CACHE_FILE=${workDir}/.civicpy/cache.pkl
+
+    # run querynator
     querynator query-api-civic \\
         --vcf $input_file \\
         --outdir ${prefix}_civic \\

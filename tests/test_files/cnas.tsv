@@ -1,0 +1,4 @@
+sample	gene	cna
+test_1	ERBB2	amp
+test_1	TP53	del
+test_1	EGFR	amp
