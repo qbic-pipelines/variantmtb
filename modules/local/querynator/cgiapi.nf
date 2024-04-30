@@ -3,6 +3,7 @@ process QUERYNATOR_CGIAPI {
     label 'process_low'
     secret 'cgi_email'
     secret 'cgi_token'
+    maxForks 1
 
     conda "bioconda::querynator=0.4.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
