@@ -32,8 +32,9 @@ process QUERYNATOR_CIVICAPI {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    # set path to civicpy cache
+    # set env variables
     export CIVICPY_CACHE_FILE=${workDir}/.civicpy/cache.pkl
+    export MPLCONFIGDIR=${workDir}/.matplotlib
 
     # run querynator
     querynator query-api-civic \\
