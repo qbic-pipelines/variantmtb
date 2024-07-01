@@ -48,9 +48,7 @@ workflow VARIANTMTB {
     if ( params.databases.contains("cgi"    )    & System.getenv("NXF_ENABLE_SECRETS") != 'true') { error("Please enable secrets: export NXF_ENABLE_SECRETS='true'")}
 
     ch_samplesheet
-        .map { meta, input_file, genome, filetype ->
-            meta["ref"] = genome
-            meta["filetype"] = filetype
+        .map { meta, input_file ->
             meta["compressed"] = input_file.extension == "gz" ? "compressed" : "uncompressed"
             return [ meta, input_file ] }
         .set { ch_input }

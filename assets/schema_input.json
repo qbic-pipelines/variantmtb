@@ -23,12 +23,14 @@
             "genome": {
                 "type": "string",
                 "enum": ["hg19", "GRCh37", "hg38", "GRCh38"],
-                "errorMessage": "genome must be one of 'hg19', 'GRCh37', 'hg38' or 'GRCh38'"
+                "errorMessage": "genome must be one of 'hg19', 'GRCh37', 'hg38' or 'GRCh38'",
+                "meta": ["ref"]
             },
             "filetype": {
                 "type": "string",
                 "pattern": "(^mutations$)|(^cnas$)|(^translocations$)",
-                "errorMessage": "the filetype must be one of 'mutations', 'cnas' or 'translocations'"
+                "errorMessage": "the filetype must be one of 'mutations', 'cnas' or 'translocations'",
+                "meta": ["filetype"]
             }
         },
         "required": ["sample", "filename", "filetype"]
