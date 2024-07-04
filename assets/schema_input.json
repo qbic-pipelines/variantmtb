@@ -39,7 +39,7 @@
             },
             "civic_cancer": {
                 "type": "string",
-                "errorMessage" : "specify a valid Disease Ontology (DO) name or id",
+                "errorMessage": "specify a valid Disease Ontology (DO) name or id",
                 "meta": ["civic_cancer"]
             }
         },

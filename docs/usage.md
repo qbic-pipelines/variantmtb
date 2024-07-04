@@ -28,7 +28,7 @@ sample_3,file_3.vcf,GRCh38,mutations,Melanoma,1909
 ```
 
 | Column         | Description                                                                                                                   |
-| ---------------| ----------------------------------------------------------------------------------------------------------------------------- |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `sample`       | Custom sample name.                                                                                                           |
 | `filename`     | Full path to VCF file for Illumina short reads 1. File can be gzipped and have the extension ".vcf.gz", ".vcf" or ".tsv".gz". |
 | `genome`       | The reference genome used in variant calling of this file.                                                                    |
