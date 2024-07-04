@@ -23,8 +23,8 @@ A final samplesheet may look something like the one below.
 ```console
 sample,filename,genome,filetype,cgi_cancer,civic_cancer
 sample_1,file_1.vcf,GRCh38,mutations,Breast adenocarcinoma,breast adenocarcinoma
-sample_2,file_2.vcf,GRCh38,mutations,Cholangiocarcinoma,cholangiocarcinoma
-sample_3,file_3.vcf,GRCh38,mutations,Melanoma,DOID:1909
+sample_2,file_2.vcf,GRCh38,mutations,Cholangiocarcinoma,DOID:4947
+sample_3,file_3.vcf,GRCh38,mutations,Melanoma,1909
 ```
 
 | Column         | Description                                                                                                                   |
@@ -34,7 +34,7 @@ sample_3,file_3.vcf,GRCh38,mutations,Melanoma,DOID:1909
 | `genome`       | The reference genome used in variant calling of this file.                                                                    |
 | `filetype`     | Either "mutations" for variant files, "cnas" for copy number alterations files or "translocations" for translocation files.   |
 | `cgi_cancer`   | The samples [OncoTree](http://oncotree.info/) cancer type. Used by CGI.                                                       |
-| `civic_cancer` | The samples [Disease Ontology](https://disease-ontology.org/do) cancer type. Used by CIViC.                                     |
+| `civic_cancer` | The samples [Disease Ontology](https://disease-ontology.org/do) cancer type. Used by CIViC. Specify name or ID.               |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
