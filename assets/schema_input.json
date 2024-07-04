@@ -31,6 +31,16 @@
                 "pattern": "(^mutations$)|(^cnas$)|(^translocations$)",
                 "errorMessage": "the filetype must be one of 'mutations', 'cnas' or 'translocations'",
                 "meta": ["filetype"]
+            },
+            "cgi_cancer": {
+                "type": "string",
+                "errorMessage": "specify a valid OncoTree cancer name",
+                "meta": ["cgi_cancer"]
+            },
+            "civic_cancer": {
+                "type": "string",
+                "errorMessage" : "specify a valid Disease Ontology (DO) name or id",
+                "meta": ["civic_cancer"]
             }
         },
         "required": ["sample", "filename", "filetype"]

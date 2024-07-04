@@ -1,0 +1,2 @@
+sample,filename,genome,filetype,cgi_cancer,civic_cancer
+test_sample,tests/test_files/test.vcf,GRCh37,mutations,Breast adenocarcinoma,breast adenocarcinoma

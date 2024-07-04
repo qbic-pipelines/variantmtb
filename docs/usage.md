@@ -47,7 +47,6 @@ nextflow run qbic-pipelines/variantmtb -r dev \
    --genome <hg19|GRCh37|hg38|GRCh38> \
    --fasta path/to/reference/file \
    --databases 'cgi, civic' \
-   --cgi_cancer_type "Any cancer type" \
    -profile docker \
 ```
 
