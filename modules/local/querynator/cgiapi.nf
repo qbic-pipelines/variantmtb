@@ -36,6 +36,7 @@ process QUERYNATOR_CGIAPI {
     def mutations_file = mutations ? "--mutations ${mutations}" : ""
     def translocation_file = translocations ? "--translocations ${translocations}" : ''
     def cnas_file = cnas ? "--cnas ${cnas}" : ''
+    def cancer = cancer ? cancer : 'Any cancer type'        // default to any cancer type if not specified
 
     """
     export MPLCONFIGDIR=${workDir}/.config/matplotlib

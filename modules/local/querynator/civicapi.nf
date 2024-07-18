@@ -30,7 +30,7 @@ process QUERYNATOR_CIVICAPI {
     script:
     def args    = task.ext.args     ?: ''
     def prefix  = task.ext.prefix   ?: "${meta.id}"
-    def cancer  = meta.civic_cancer ? "--cancer ${meta.civic_cancer}" : ''
+    def cancer  = meta.civic_cancer ? "--cancer '${meta.civic_cancer}'" : ''
 
     """
     # set path to civicpy cache
