@@ -32,7 +32,7 @@
                     },
                     "tabix/tabix": {
                         "branch": "master",
-                        "git_sha": "9502adb23c0b97ed8e616bbbdfa73b4585aec9a1",
+                        "git_sha": "964d13ef113ef654e2c7fe4530884b8927e2c25c",
                         "installed_by": ["modules"]
                     }
                 }
