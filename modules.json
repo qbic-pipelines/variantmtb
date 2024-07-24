@@ -22,7 +22,7 @@
                     },
                     "gunzip": {
                         "branch": "master",
-                        "git_sha": "a7231cbccb86535529e33859e05d19ac93f3ea04",
+                        "git_sha": "4e5f4687318f24ba944a13609d3ea6ebd890737d",
                         "installed_by": ["modules"]
                     },
                     "tabix/bgziptabix": {
