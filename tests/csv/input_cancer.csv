@@ -1,2 +1,4 @@
 sample,filename,genome,filetype,cgi_cancer,civic_cancer
-test_sample,tests/test_files/test.vcf,GRCh37,mutations,Breast adenocarcinoma,breast adenocarcinoma
+test_sample-A,tests/test_files/test.vcf,GRCh37,mutations,Breast adenocarcinoma,breast adenocarcinoma
+test_sample-B,tests/test_files/test.vcf,GRCh37,mutations,Cholangiocarcinoma,Cholangiocarcinoma
+test_sample-C,tests/test_files/test.vcf,GRCh37,mutations,Brain,Brain Stem Cancer
