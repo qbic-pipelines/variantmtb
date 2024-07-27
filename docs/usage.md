@@ -21,18 +21,20 @@ You will need to create a samplesheet with information about the samples you wou
 A final samplesheet may look something like the one below.
 
 ```console
-sample,filename,genome,filetype
-sample_1,file_1.vcf,GRCh38,mutations
-sample_2,file_2.vcf,GRCh38,mutations
-sample_3,file_3.vcf,GRCh38,mutations
+sample,filename,genome,filetype,cgi_cancer,civic_cancer
+sample_1,file_1.vcf,GRCh38,mutations,Breast adenocarcinoma,breast adenocarcinoma
+sample_2,file_2.vcf,GRCh38,mutations,Cholangiocarcinoma,DOID:4947
+sample_3,file_3.vcf,GRCh38,mutations,Melanoma,1909
 ```
 
-| Column     | Description                                                                                                                   |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `sample`   | Custom sample name.                                                                                                           |
-| `filename` | Full path to VCF file for Illumina short reads 1. File can be gzipped and have the extension ".vcf.gz", ".vcf" or ".tsv".gz". |
-| `genome`   | The reference genome used in variant calling of this file.                                                                    |
-| `filetype` | Either "mutations" for variant files, "cnas" for copy number alterations files or "translocations" for translocation files.   |
+| Column         | Description                                                                                                                   |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `sample`       | Custom sample name.                                                                                                           |
+| `filename`     | Full path to VCF file for Illumina short reads 1. File can be gzipped and have the extension ".vcf.gz", ".vcf" or ".tsv".gz". |
+| `genome`       | The reference genome used in variant calling of this file.                                                                    |
+| `filetype`     | Either "mutations" for variant files, "cnas" for copy number alterations files or "translocations" for translocation files.   |
+| `cgi_cancer`   | The samples [OncoTree](http://oncotree.info/) cancer type. Used by CGI.                                                       |
+| `civic_cancer` | The samples [Disease Ontology](https://disease-ontology.org/do) cancer type. Used by CIViC. Specify name or ID.               |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -47,7 +49,6 @@ nextflow run qbic-pipelines/variantmtb -r dev \
    --genome <hg19|GRCh37|hg38|GRCh38> \
    --fasta path/to/reference/file \
    --databases 'cgi, civic' \
-   --cgi_cancer_type "Any cancer type" \
    -profile docker \
 ```
 

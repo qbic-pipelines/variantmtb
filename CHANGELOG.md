@@ -3,26 +3,58 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.0dev - Wendelstein
+
+### Added
+
+- filter civic evidences according to patient cancer type
+
+### Fixed
+
+### Dependencies
+
+- updated querynator to 0.5.4
+
+### Deprecated
+
+### Removed
+
+- `--cgi_cancer_type` is no longer supported. specify cancer type in sample sheet instead using `cgi_cancer` and `civic_cancer`
+
+## [0.2.0](https://github.com/qbic-pipelines/variantmtb/releases/tag/0.2.0) - Wendelstein
+
+### Added
+
+- nextflow secrets for CGI credentials.
+
+### Fixed
+
+### Dependencies
+
+- bcftools version 1.18.
+
+### Deprecated
+
 ## [0.1.0](https://github.com/qbic-pipelines/variantmtb/releases/tag/0.1.0) - Paris-Roubaix
 
-### `Added`
+### Added
 
 - [#1](https://github.com/qbic-pipelines/variantmtb/pull/1) - Query to CGI & CIViC. Creation of a comprehensive HTML report.
 
-### `Fixed`
+### Fixed
 
-### `Dependencies`
+### Dependencies
 
-### `Deprecated`
+### Deprecated
 
 ## v1.0dev - [date]
 
 Initial release of nf-core/variantmtb, created with the [nf-core](https://nf-co.re/) template.
 
-### `Added`
+### Added
 
-### `Fixed`
+### Fixed
 
-### `Dependencies`
+### Dependencies
 
-### `Deprecated`
+### Deprecated

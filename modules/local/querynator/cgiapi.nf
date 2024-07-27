@@ -4,10 +4,10 @@ process QUERYNATOR_CGIAPI {
     secret 'cgi_email'
     secret 'cgi_token'
 
-    conda "bioconda::querynator=0.4.2"
+    conda "bioconda::querynator=0.5.4"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/querynator:0.4.2--pyh7cba7a3_0':
-        'quay.io/biocontainers/querynator:0.4.2--pyh7cba7a3_0' }"
+        'https://depot.galaxyproject.org/singularity/querynator:0.5.4--pyhdfd78af_0':
+        'quay.io/biocontainers/querynator:0.5.4--pyhdfd78af_0' }"
 
 
     input:
@@ -36,14 +36,17 @@ process QUERYNATOR_CGIAPI {
     def mutations_file = mutations ? "--mutations ${mutations}" : ""
     def translocation_file = translocations ? "--translocations ${translocations}" : ''
     def cnas_file = cnas ? "--cnas ${cnas}" : ''
+    def cancer = cancer ? cancer : 'Any cancer type'        // default to any cancer type if not specified
 
     """
+    export MPLCONFIGDIR=${workDir}/.config/matplotlib
+
     querynator query-api-cgi \\
         $mutations_file \\
         $translocation_file \\
         $cnas_file \\
         --outdir ${prefix}_cgi \\
-        --cancer $cancer \\
+        --cancer '$cancer' \\
         --genome $genome \\
         --token \${cgi_token} \\
         --email \${cgi_email} \\

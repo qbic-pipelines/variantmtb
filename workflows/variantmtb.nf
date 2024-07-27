@@ -41,16 +41,13 @@ workflow VARIANTMTB {
     */
 
     // CHECK PARAMETERS
-    if ( params.databases.contains("cgi"    )    & !params.cgi_cancer_type          )   { error("Please include the cancer types to query CGI for!" )}
     if ( params.databases.contains("civic"  )    & !params.fasta & !params.genome   )   { error("No reference provided! use --genome or --fasta"    )}
 
     // CHECK SECRETS
     if ( params.databases.contains("cgi"    )    & System.getenv("NXF_ENABLE_SECRETS") != 'true') { error("Please enable secrets: export NXF_ENABLE_SECRETS='true'")}
 
     ch_samplesheet
-        .map { meta, input_file, genome, filetype ->
-            meta["ref"] = genome
-            meta["filetype"] = filetype
+        .map { meta, input_file ->
             meta["compressed"] = input_file.extension == "gz" ? "compressed" : "uncompressed"
             return [ meta, input_file ] }
         .set { ch_input }
@@ -75,7 +72,7 @@ workflow VARIANTMTB {
                                     input_file,
                                     [],
                                     [],
-                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
+                                    meta["cgi_cancer"],
                                     meta["ref"]
                                     ]
                     translocations : meta["filetype"] == 'translocations'
@@ -83,7 +80,7 @@ workflow VARIANTMTB {
                                     [],
                                     input_file,
                                     [],
-                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
+                                    meta["cgi_cancer"],
                                     meta["ref"]
                                     ]
                     cnas : meta["filetype"] == 'cnas'
@@ -91,7 +88,7 @@ workflow VARIANTMTB {
                                     [],
                                     [],
                                     input_file,
-                                    create_cgi_cancer_type_string(params.cgi_cancer_type),
+                                    meta["cgi_cancer"],
                                     meta["ref"]
                                     ]
                 }
@@ -227,17 +224,7 @@ workflow VARIANTMTB {
 }
 
 
-// Function that checks whether params.cgi_cancer_types contains the quotations ('') and isnt just a string.
-// If lonely string, adds the quotations, so that cancer types consisting of multiple words can be read by querynator
-def create_cgi_cancer_type_string(cancer_type) {
-    if (!params.cgi_cancer_type.contains("'")) {
-        cgi_cancer_type_string = "'" + cancer_type + "'"
-    }
-    else {
-        cgi_cancer_type_string = cancer_type
-    }
-    return cgi_cancer_type_string
-}
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

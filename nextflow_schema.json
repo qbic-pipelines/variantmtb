@@ -81,15 +81,12 @@
                     "type": "string",
                     "description": "Databases which should be queried.",
                     "default": "cgi, civic",
-                    "pattern": "^(cgi|civic)((,| )+(cgi|civic))*$"
-                },
-                "cgi_cancer_type": {
-                    "type": "string",
-                    "description": "Cancer type as input for the CGI query. See [here](https://github.com/qbic-pipelines/querynator/blob/master/querynator/query_api/cancertypes.js) for a complete list of supported cancer types.",
-                    "default": "\\'Any cancer type\\"
+                    "pattern": "^(cgi|civic)((,| )+(cgi|civic))*$",
+                    "fa_icon": "fas fa-database"
                 }
             },
-            "required": ["databases"]
+            "required": ["databases"],
+            "fa_icon": "fas fa-database"
         },
         "institutional_config_options": {
             "title": "Institutional config options",
