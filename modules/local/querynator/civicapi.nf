@@ -2,10 +2,10 @@ process QUERYNATOR_CIVICAPI {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::querynator=0.4.2"
+    conda "bioconda::querynator=0.5.5"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/querynator:0.4.2--pyh7cba7a3_0':
-        'quay.io/biocontainers/querynator:0.4.2--pyh7cba7a3_0' }"
+        'https://depot.galaxyproject.org/singularity/querynator:0.5.5--pyhdfd78af_0':
+        'quay.io/biocontainers/querynator:0.5.5--pyhdfd78af_0' }"
 
 
     input:
@@ -28,12 +28,14 @@ process QUERYNATOR_CIVICAPI {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def args    = task.ext.args     ?: ''
+    def prefix  = task.ext.prefix   ?: "${meta.id}"
+    def cancer  = meta.civic_cancer ? "--cancer '${meta.civic_cancer}'" : ''
 
     """
     # set path to civicpy cache
     export CIVICPY_CACHE_FILE=${workDir}/.civicpy/cache.pkl
+    export MPLCONFIGDIR=${workDir}/.config/matplotlib
 
     # run querynator
     querynator query-api-civic \\
@@ -41,6 +43,7 @@ process QUERYNATOR_CIVICAPI {
         --outdir ${prefix}_civic \\
         --genome $meta.ref \\
         --filter_vep \\
+        $cancer \\
         $args
 
 
