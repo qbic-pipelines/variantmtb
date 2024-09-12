@@ -4,8 +4,6 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-
-//TODO check which of these imports are used and remove the unused ones
 include { QUERYNATOR_CGIAPI             }   from '../modules/local/querynator/cgiapi'
 include { QUERYNATOR_CIVICAPI           }   from '../modules/local/querynator/civicapi'
 include { QUERYNATOR_CREATEREPORT       }   from '../modules/local/querynator/createreport'
@@ -202,13 +200,6 @@ workflow VARIANTMTB {
 
         ch_versions = ch_versions.mix(QUERYNATOR_CREATEREPORT.out.versions)
     }
-
-
-    //TODO uncomment or remove if deprecated
-    // Dump Software versions
-    CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
 
     // Collate and save software versions
 

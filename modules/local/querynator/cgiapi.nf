@@ -5,10 +5,10 @@ process QUERYNATOR_CGIAPI {
     secret 'cgi_token'
     maxForks 1
 
-    conda "bioconda::querynator=0.5.4"
+    conda "bioconda::querynator=0.5.5"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/querynator:0.5.4--pyhdfd78af_0':
-        'quay.io/biocontainers/querynator:0.5.4--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/querynator:0.5.5--pyhdfd78af_0':
+        'quay.io/biocontainers/querynator:0.5.5--pyhdfd78af_0' }"
 
 
     input:

@@ -6,7 +6,7 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
+<!-- nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
 
 ## Samplesheet input
 
@@ -27,14 +27,14 @@ sample_2,file_2.vcf,GRCh38,mutations,Cholangiocarcinoma,DOID:4947
 sample_3,file_3.vcf,GRCh38,mutations,Melanoma,1909
 ```
 
-| Column         | Description                                                                                                                   |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `sample`       | Custom sample name.                                                                                                           |
-| `filename`     | Full path to VCF file for Illumina short reads 1. File can be gzipped and have the extension ".vcf.gz", ".vcf" or ".tsv".gz". |
-| `genome`       | The reference genome used in variant calling of this file.                                                                    |
-| `filetype`     | Either "mutations" for variant files, "cnas" for copy number alterations files or "translocations" for translocation files.   |
-| `cgi_cancer`   | The samples [OncoTree](http://oncotree.info/) cancer type. Used by CGI.                                                       |
-| `civic_cancer` | The samples [Disease Ontology](https://disease-ontology.org/do) cancer type. Used by CIViC. Specify name or ID.               |
+| Column         | Description                                                                                                                 |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `sample`       | Custom sample name.                                                                                                         |
+| `filename`     | Full path to VCF file. File can be gzipped and have the extension ".vcf.gz", ".vcf" or ".tsv".gz".                          |
+| `genome`       | The reference genome used in variant calling of this file.                                                                  |
+| `filetype`     | Either "mutations" for variant files, "cnas" for copy number alterations files or "translocations" for translocation files. |
+| `cgi_cancer`   | The samples [OncoTree](http://oncotree.info/) cancer type. Used by CGI.                                                     |
+| `civic_cancer` | The samples [Disease Ontology](https://disease-ontology.org/do) cancer type. Used by CIViC. Specify name or ID.             |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -43,7 +43,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run qbic-pipelines/variantmtb -r dev \
+nextflow run qbic-pipelines/variantmtb -r 1.0.0 \
    --input samplesheet.csv \
    --outdir <OUTDIR> \
    --genome <hg19|GRCh37|hg38|GRCh38> \

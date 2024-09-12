@@ -12,10 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - [#10](https://github.com/qbic-pipelines/variantmtb/issues/10) CGI used to fail when querying files in parallel. Disabled parallelization for CGI.
+- important querynator fixes, see [querynator:0.5.5 release notes](https://github.com/qbic-pipelines/querynator/releases/tag/0.5.5)
 
 ### Dependencies
 
-- updated querynator to 0.5.4
+- updated querynator to 0.5.5
 
 ### Deprecated
 
