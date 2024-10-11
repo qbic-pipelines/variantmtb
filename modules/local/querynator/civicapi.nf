@@ -2,10 +2,10 @@ process QUERYNATOR_CIVICAPI {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::querynator=0.5.5"
+    conda "bioconda::querynator=0.6.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/querynator:0.5.5--pyhdfd78af_0':
-        'quay.io/biocontainers/querynator:0.5.5--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/querynator:0.6.0--pyhdfd78af_0':
+        'quay.io/biocontainers/querynator:0.6.0--pyhdfd78af_0' }"
 
 
     input:
@@ -39,12 +39,12 @@ process QUERYNATOR_CIVICAPI {
 
     # run querynator
     querynator query-api-civic \\
-        --vcf $input_file \\
+        --vcf ${input_file} \\
         --outdir ${prefix}_civic \\
-        --genome $meta.ref \\
+        --genome ${meta.ref} \\
         --filter_vep \\
-        $cancer \\
-        $args
+        ${cancer} \\
+        ${args}
 
 
     cat <<-END_VERSIONS > versions.yml

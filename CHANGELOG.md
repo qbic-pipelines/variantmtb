@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - filter civic evidences according to patient cancer type
+- filter civic evidences through custom filters
+- profile `actionability` containing common civic evidence filters for actionability queries
 
 ### Fixed
 
@@ -16,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
-- updated querynator to 0.5.5
+- updated querynator to 0.6.0
 
 ### Deprecated
 

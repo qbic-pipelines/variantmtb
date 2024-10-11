@@ -162,6 +162,14 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
   - A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
 - `conda`
   - A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer.
+- `actionability`
+  - holds common filters for civic evidences when only interested in actionability evidences
+  - contains the following filters for civic evidence, set via the `--filter_evidence` parameter:
+    - `type=predictive`
+    - `significance=SensitivityResponse`
+    - `direction=supports`
+    - `status=accepted`
+    - `level=D`
 
 ### `-resume`
 
