@@ -1,0 +1,11 @@
+- name: Run default pipeline
+  command: nextflow run main.nf -profile test,docker
+  tags:
+    - default
+    - preprocessing
+  files:
+    - path: results/test_sample/test_sample_civic/metadata.txt
+    - path: results/test_sample/test_sample_civic/test_sample_civic.civic_results.tsv
+    - path: results/test_sample/test_sample_civic/vcf_files/test_sample_civic.filtered_variants.vcf
+    - path: results/test_sample/test_sample_civic/vcf_files/test_sample_civic.removed_variants.vcf
+    - path: results/test_sample/versions.yml

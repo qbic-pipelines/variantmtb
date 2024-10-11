@@ -1,38 +1,47 @@
-# ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_light.png#gh-light-mode-only) ![nf-core/variantmtb](docs/images/nf-core-variantmtb_logo_dark.png#gh-dark-mode-only)
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/nf-core-variantmtb_logo_dark.png">
+    <img alt="nf-core/variantmtb" src="docs/images/nf-core-variantmtb_logo_light.png">
+  </picture>
+</h1>
 
-[![GitHub Actions CI Status](https://github.com/nf-core/variantmtb/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/variantmtb/actions?query=workflow%3A%22nf-core+CI%22)
-[![GitHub Actions Linting Status](https://github.com/nf-core/variantmtb/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/variantmtb/actions?query=workflow%3A%22nf-core+linting%22)
-[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?logo=Amazon%20AWS)](https://nf-co.re/variantmtb/results)
-[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![GitHub Actions CI Status](https://github.com/qbic-pipelines/variantmtb/actions/workflows/ci.yml/badge.svg)](https://github.com/qbic-pipelines/variantmtb/actions/workflows/ci.yml)
+[![GitHub Actions Linting Status](https://github.com/qbic-pipelines/variantmtb/actions/workflows/linting.yml/badge.svg)](https://github.com/qbic-pipelines/variantmtb/actions/workflows/linting.yml)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/variantmtb/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.10.3-23aa62.svg)](https://www.nextflow.io/)
-[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?logo=anaconda)](https://docs.conda.io/en/latest/)
-[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?logo=docker)](https://www.docker.com/)
-[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg)](https://sylabs.io/docs/)
-[![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/nf-core/variantmtb)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A523.04.0-23aa62.svg)](https://www.nextflow.io/)
+[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
+[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
+[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
+[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/nf-core/variantmtb)
 
-[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23variantmtb-4A154B?logo=slack)](https://nfcore.slack.com/channels/variantmtb)
-[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?logo=twitter)](https://twitter.com/nf_core)
-[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?logo=youtube)](https://www.youtube.com/c/nf-core)
+[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23variantmtb-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/variantmtb)[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?labelColor=000000&logo=twitter)](https://twitter.com/nf_core)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
 
 ## Introduction
 
-<!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
+<!-- nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
 
-**nf-core/variantmtb** is a bioinformatics best-practice analysis pipeline for This pipeline queries variant databases to investigate the biological and predictive relevance of tumor variants.
+**qbic-pipelines/variantmtb** is a bioinformatics best-practice analysis pipeline for querying variant databases to investigate the diagnostic, prognostic and predictive relevance of tumor variants.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
-<!-- TODO nf-core: Add full-sized test dataset and amend the paragraph below if applicable -->
+<!-- nf-core: Add full-sized test dataset and amend the paragraph below if applicable -->
 
-On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources. The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/variantmtb/results).
+<!-- On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources. The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/variantmtb/results). -->
+
+<p align="center">
+    <img title="variantMTB workflow" src="docs/images/variantMTB_workflow.png" width=70%>
+</p>
 
 ## Pipeline summary
 
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
+<!-- nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
-1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+1. Normalize variants [bcftools norm](https://www.htslib.org/doc/1.0/bcftools.html#norm)
+2. Index VCF file [tabix](http://www.htslib.org/doc/tabix.html)
+3. Query [CGI](https://www.cancergenomeinterpreter.org/home)
+4. Query [CIViC](https://civicdb.org/variants/home)
+5. Categorize variants and create an comprehensive HTML report
 
 ## Quick Start
 
@@ -55,10 +64,10 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 4. Start running your own analysis!
 
-   <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
+   <!-- nf-core: Update the example "typical command" below used to run the pipeline -->
 
    ```console
-   nextflow run nf-core/variantmtb --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+   nextflow run qbic-pipelines/variantmtb -r dev --input samplesheet.csv --outdir <OUTDIR> --genome GRCh38 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
    ```
 
 ## Documentation
@@ -67,11 +76,10 @@ The nf-core/variantmtb pipeline comes with documentation about the pipeline [usa
 
 ## Credits
 
-nf-core/variantmtb was originally written by SusiJo.
+nf-core/variantmtb was originally started by SusiJo, mainly developed by mapo9 and further contributions by HomoPolyethylen.
 
-We thank the following people for their extensive assistance in the development of this pipeline:
-
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+<!-- nf-core: If applicable, make list of people who have also contributed -->
+<!-- We thank the following people for their extensive assistance in the development of this pipeline: -->
 
 ## Contributions and Support
 
@@ -82,9 +90,9 @@ For further information or help, don't hesitate to get in touch on the [Slack `#
 ## Citations
 
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use  nf-core/variantmtb for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
+<!-- If you use nf-core/variantmtb for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
 
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
+<!-- nf-core: Add bibliography of tools and data used in your pipeline -->
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 

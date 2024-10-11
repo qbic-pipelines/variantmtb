@@ -10,10 +10,15 @@
 
 ## Pipeline tools
 
-- [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+- [Tabix](http://www.htslib.org/doc/tabix.html)
+- [bcftools norm](https://samtools.github.io/bcftools/bcftools.html#norm)
 
-- [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
-  > Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+- [CGI](https://www.cancergenomeinterpreter.org/home)
+  > Tamborero, D., Rubio-Perez, C., Deu-Pons, J., Schroeder, M. P., Vivancos, A., Rovira, A., ... & Lopez-Bigas, N. (2018). Cancer Genome Interpreter annotates the biological and clinical relevance of tumor alterations. Genome medicine, 10, 1-8.
+- [CIViC](https://civicdb.org/welcome)
+  > Griffith, M., Spies, N. C., Krysiak, K., McMichael, J. F., Coffman, A. C., Danos, A. M., ... & Griffith, O. L. (2017). CIViC is a community knowledgebase for expert crowdsourcing the clinical interpretation of variants in cancer. Nature genetics, 49(2), 170-174.
+- [CIViCpy](https://docs.civicpy.org/en/latest/)
+  > Wagner, A. H., Kiwala, S., Coffman, A. C., McMichael, J. F., Cotto, K. C., Mooney, T. B., ... & Griffith, M. (2020). CIViCpy: a python software development and analysis toolkit for the CIViC knowledgebase. JCO Clinical Cancer Informatics, 4, 245-253.
 
 ## Software packaging/containerisation tools
 
@@ -31,5 +36,8 @@
 
 - [Docker](https://dl.acm.org/doi/10.5555/2600239.2600241)
 
+  > Merkel, D. (2014). Docker: lightweight linux containers for consistent development and deployment. Linux Journal, 2014(239), 2. doi: 10.5555/2600239.2600241.
+
 - [Singularity](https://pubmed.ncbi.nlm.nih.gov/28494014/)
+
   > Kurtzer GM, Sochat V, Bauer MW. Singularity: Scientific containers for mobility of compute. PLoS One. 2017 May 11;12(5):e0177459. doi: 10.1371/journal.pone.0177459. eCollection 2017. PubMed PMID: 28494014; PubMed Central PMCID: PMC5426675.
